@@ -11,19 +11,35 @@ export default defineConfig({
       wrappers: ['@/components/AuthWrapper', '@/components/NprogressWrapper'],
       routes: [
         {
+          path: '/login',
+          component: '@/pages/login',
+        },
+        {
           path: '/',
           component: '@/layouts/AccessLayout',
           routes: [
             {
               path: '/dashboard',
-              icon: 'dashboard',
+              name: 'dashboard',
+              icon: 'GroupOutlined',
               component: '@/pages/dashboard',
             },
+            {
+              path: '/dashboard2',
+              name: 'dashboard2',
+              component: '@/pages/dashboard',
+              routes: [
+                {
+                  path: '/dashboard2',
+                  name: 'dashboard2',
+                  component: '@/pages/dashboard',
+                },
+              ],
+            },
+            {
+              component: '@/pages/404',
+            },
           ],
-        },
-        {
-          path: '/login',
-          component: '@/pages/login',
         },
       ],
     },

@@ -1,81 +1,120 @@
+import ProLayout, {
+  MenuDataItem,
+  BasicLayoutProps as ProLayoutProps,
+  DefaultFooter,
+} from '@ant-design/pro-layout';
 import React from 'react';
-import setting from '@/setting';
-import { Layout, Menu } from 'antd';
-import { ConnectProps, connect } from 'umi';
-import {
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-  UploadOutlined,
-} from '@ant-design/icons';
-const { Header, Sider, Content } = Layout;
-
-interface AccessLayoutProps extends ConnectProps {
-  collapsed: boolean;
+import { Link, connect, Dispatch, AppModelState } from 'umi';
+import { GithubOutlined } from '@ant-design/icons';
+import RightContent from './RightContent';
+const Icons = require('@ant-design/icons');
+interface BasicLayoutProps extends ProLayoutProps {
+  breadcrumbNameMap: {
+    [path: string]: MenuDataItem;
+  };
+  route: ProLayoutProps['route'];
+  dispatch: Dispatch;
 }
 
-class AccessLayout extends React.Component<AccessLayoutProps> {
-  toggle = (collapsed: boolean) => {
-    const { dispatch } = this.props;
-    dispatch!({
-      type: 'app/toggleCollapse',
-      payload: collapsed,
-    });
-  };
-
-  render() {
-    const { collapsed } = this.props;
-    return (
-      <Layout id="components-layout-demo-custom-trigger">
-        <Sider trigger={null} collapsible collapsed={collapsed}>
-          <div className="logo" />
-          <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
-            <Menu.Item key="1" icon={<UserOutlined />}>
-              nav 1
-            </Menu.Item>
-            <Menu.Item key="2" icon={<VideoCameraOutlined />}>
-              nav 2
-            </Menu.Item>
-            <Menu.Item key="3" icon={<UploadOutlined />}>
-              nav 3
-            </Menu.Item>
-          </Menu>
-        </Sider>
-        <Layout className="site-layout">
-          <Header className="site-layout-background" style={{ padding: 0 }}>
-            {React.createElement(
-              collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
-              {
-                className: 'trigger',
-                onClick: () => this.toggle(!collapsed),
-              },
-            )}
-          </Header>
-          <Content
-            className="site-layout-background"
-            style={{
-              margin: '24px 16px',
-              padding: 24,
-              minHeight: 280,
-            }}
-          >
-            Content
-          </Content>
-        </Layout>
-      </Layout>
-    );
-  }
-}
-
-const mapStateToProps = ({
-  app: { collapsed },
-}: {
-  app: { collapsed: boolean };
-}) => {
-  return {
-    collapsed,
-  };
+const menuDataRender = (menuList: MenuDataItem[]): MenuDataItem[] => {
+  return menuList.map(item => {
+    const localItem = {
+      ...item,
+      children: item.children ? menuDataRender(item.children) : [],
+    };
+    return localItem;
+  });
 };
 
-export default connect(mapStateToProps)(AccessLayout);
+const defaultFooterDom = (
+  <DefaultFooter
+    copyright="2019 蚂蚁金服体验技术部出品"
+    links={[
+      {
+        key: 'Ant Design Pro',
+        title: 'Ant Design Pro',
+        href: 'https://pro.ant.design',
+        blankTarget: true,
+      },
+      {
+        key: 'github',
+        title: <GithubOutlined />,
+        href: 'https://github.com/ant-design/ant-design-pro',
+        blankTarget: true,
+      },
+      {
+        key: 'Ant Design',
+        title: 'Ant Design',
+        href: 'https://ant.design',
+        blankTarget: true,
+      },
+    ]}
+  />
+);
+
+const BasicLayout: React.FC<BasicLayoutProps> = props => {
+  const { dispatch, children } = props;
+
+  const handleMenuCollapse = (payload: boolean): void => {
+    if (dispatch) {
+      dispatch({
+        type: 'app/toggleCollapse',
+        payload,
+      });
+    }
+  };
+  return (
+    <ProLayout
+      title="Umi-Admin-Template"
+      menuHeaderRender={(logoDom, titleDom) => (
+        <Link to="/">
+          {logoDom}
+          {titleDom}
+        </Link>
+      )}
+      onCollapse={handleMenuCollapse}
+      menuItemRender={(menuItemProps, defaultDom) => {
+        if (
+          menuItemProps.isUrl ||
+          menuItemProps.children ||
+          !menuItemProps.path
+        ) {
+          return defaultDom;
+        }
+
+        const Icon = Icons[menuItemProps.icon as string];
+        return (
+          <Link to={menuItemProps.path}>
+            {Icon ? <Icon /> : null}
+            <span>{menuItemProps.name}</span>
+          </Link>
+        );
+      }}
+      breadcrumbRender={(routers = []) => [
+        {
+          path: '/',
+          breadcrumbName: '首页',
+        },
+        ...routers,
+      ]}
+      itemRender={(route, params, routes, paths) => {
+        const first = routes.indexOf(route) === 0;
+        return first ? (
+          <Link to={paths.join('/')}>{route.breadcrumbName}</Link>
+        ) : (
+          <span>{route.breadcrumbName}</span>
+        );
+      }}
+      footerRender={() => defaultFooterDom}
+      menuDataRender={menuDataRender}
+      rightContentRender={() => <RightContent />}
+      {...props}
+    >
+      {children}
+    </ProLayout>
+  );
+};
+
+export default connect(({ app }: { app: AppModelState }) => ({
+  collapsed: app.collapsed,
+}))(BasicLayout);

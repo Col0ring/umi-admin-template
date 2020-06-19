@@ -3,7 +3,7 @@ import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 NProgress.configure({ showSpinner: false });
 
-interface AppModelState {
+export interface AppModelState {
   collapsed: boolean;
 }
 
