@@ -4,10 +4,12 @@ import ProLayout, {
   DefaultFooter,
 } from '@ant-design/pro-layout';
 import React from 'react';
+import * as Icon from '@ant-design/icons';
+
 import { Link, connect, Dispatch, AppModelState } from 'umi';
 import { GithubOutlined } from '@ant-design/icons';
 import RightContent from './RightContent';
-const Icons = require('@ant-design/icons');
+
 interface BasicLayoutProps extends ProLayoutProps {
   breadcrumbNameMap: {
     [path: string]: MenuDataItem;
@@ -65,7 +67,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
   };
   return (
     <ProLayout
-      title="Umi-Admin-Template"
+      title="Umi-Admin"
       menuHeaderRender={(logoDom, titleDom) => (
         <Link to="/">
           {logoDom}
@@ -82,10 +84,11 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
           return defaultDom;
         }
 
-        const Icon = Icons[menuItemProps.icon as string];
         return (
           <Link to={menuItemProps.path}>
-            {Icon ? <Icon /> : null}
+            {typeof menuItemProps.icon === 'string' &&
+              React.createElement((Icon as AnyObject)[menuItemProps.icon])}
+
             <span>{menuItemProps.name}</span>
           </Link>
         );

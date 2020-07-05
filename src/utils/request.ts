@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { history, getDvaApp } from 'umi';
+import { getDvaApp } from 'umi';
 import { message, Modal } from 'antd';
 import { getToken } from '@/utils/auth';
 

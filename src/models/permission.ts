@@ -1,7 +1,11 @@
 import { Effect, Reducer } from 'umi';
 import { routerRedux } from 'dva';
 import { getToken, setToken, removToken } from '@/utils/auth';
-import { reqLogin, reqGetUserInfo } from '@/services/user';
+import {
+  reqLoginByPassword,
+  reqLoginByCode,
+  reqGetUserInfo,
+} from '@/services/user';
 
 export interface UserProps {
   name: string;
@@ -45,7 +49,12 @@ const PermissionModel: PermissionModelType = {
   },
   effects: {
     *login({ payload }, { call, put }) {
-      const res = yield call(reqLogin, payload);
+      let res;
+      if (payload.type === 'password') {
+        res = yield call(reqLoginByPassword, payload.data);
+      } else if (payload.type === 'code') {
+        res = yield call(reqLoginByCode, payload.data);
+      }
       if (res) {
         yield put({
           type: 'setToken',

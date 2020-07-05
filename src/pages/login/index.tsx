@@ -1,19 +1,61 @@
 import React from 'react';
-import { Button } from 'antd';
-import { connect, ConnectRC } from 'umi';
+import { useSelector, useDispatch } from 'umi';
+import ParticlesBg from 'particles-bg';
+import { Tabs } from 'antd';
+import PasswordForm from './components/PasswordForm';
+import CodeForm from './components/CodeForm';
+import LoginHeader from './components/LoginHeader';
+import styles from './index.less';
+import setting from '@/setting';
 
-const Login: ConnectRC = ({ dispatch }) => {
-  const onLogin = () => {
-    dispatch!({
+const { TabPane } = Tabs;
+
+const Login: React.FC = () => {
+  const { loading } = useSelector(({ loading }) => ({
+    loading: loading.effects['permission/login'],
+  }));
+  const dispatch = useDispatch();
+
+  const onPasswordLogin = (username: string, password: string) => {
+    dispatch({
       type: 'permission/login',
-      payload: { username: 'admin', password: '123456' },
+      payload: {
+        type: 'password',
+        data: {
+          username,
+          password,
+        },
+      },
+    });
+  };
+  const onCodeLogin = (phone: string, code: string) => {
+    dispatch({
+      type: 'permission/login',
+      payload: {
+        type: 'code',
+        data: {
+          phone,
+          code,
+        },
+      },
     });
   };
   return (
-    <div>
-      <Button onClick={onLogin}>登陆</Button>
+    <div className={styles.loginContainer}>
+      <div className={styles.loginForm}>
+        <LoginHeader title={setting.menuTitle} className={styles.loginHeader} />
+        <Tabs centered>
+          <TabPane tab="验证码登陆" key="code">
+            <CodeForm onLogin={onCodeLogin} loading={loading} />
+          </TabPane>
+          <TabPane tab="账号密码登陆" key="password">
+            <PasswordForm onLogin={onPasswordLogin} loading={loading} />
+          </TabPane>
+        </Tabs>
+      </div>
+      <ParticlesBg bg type="cobweb" />
     </div>
   );
 };
 
-export default connect()(Login);
+export default Login;
