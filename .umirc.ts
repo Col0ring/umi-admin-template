@@ -1,8 +1,14 @@
 import { defineConfig } from 'umi';
-
+import variables from './theme/variables';
 export default defineConfig({
   nodeModulesTransform: {
     type: 'none',
+  },
+  theme: {
+    ...variables,
+  },
+  dynamicImport: {
+    loading: '@/components/PageLoading',
   },
   routes: [
     {
@@ -16,8 +22,12 @@ export default defineConfig({
         },
         {
           path: '/',
-          component: '@/layouts/AccessLayout',
+          component: '@/layouts/AccessLayout/index2',
           routes: [
+            {
+              path: '/',
+              redirect: '/dashboard',
+            },
             {
               path: '/dashboard',
               name: 'dashboard',
@@ -25,14 +35,39 @@ export default defineConfig({
               component: '@/pages/dashboard',
             },
             {
-              path: '/dashboard2',
-              name: 'dashboard2',
+              path: '/dashboard1',
+              name: 'dashboard1',
+              icon: 'GroupOutlined',
               component: '@/pages/dashboard',
               routes: [
                 {
-                  path: '/dashboard2',
+                  path: '/dashboard1',
+                  name: 'dashboard11',
+                  component: '@/pages/dashboard',
+                },
+                {
+                  path: 'dashboard2',
                   name: 'dashboard2',
                   component: '@/pages/dashboard',
+                  routes: [
+                    {
+                      path: 'dashboard2/:id',
+                      name: 'dashboar22',
+                      component: '@/pages/dashboard',
+                      routes: [
+                        {
+                          path: 'dashboard2',
+                          name: 'dashboard222',
+                          component: '@/pages/dashboard',
+                        },
+                        {
+                          path: '/dashboard3',
+                          name: 'dashboard3',
+                          component: '@/pages/dashboard',
+                        },
+                      ],
+                    },
+                  ],
                 },
               ],
             },

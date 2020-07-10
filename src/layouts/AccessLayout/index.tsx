@@ -3,6 +3,8 @@ import ProLayout, {
   BasicLayoutProps as ProLayoutProps,
   DefaultFooter,
 } from '@ant-design/pro-layout';
+import SiderBar from './SiderBar';
+
 import React from 'react';
 import * as Icon from '@ant-design/icons';
 
@@ -55,7 +57,7 @@ const defaultFooterDom = (
 );
 
 const BasicLayout: React.FC<BasicLayoutProps> = props => {
-  const { dispatch, children } = props;
+  const { dispatch, children, route } = props;
 
   const handleMenuCollapse = (payload: boolean): void => {
     if (dispatch) {
@@ -114,6 +116,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
       {...props}
     >
       {children}
+      <SiderBar menus={route!.routes!}></SiderBar>
     </ProLayout>
   );
 };

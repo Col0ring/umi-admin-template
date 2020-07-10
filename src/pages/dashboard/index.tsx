@@ -1,7 +1,6 @@
 import React from 'react';
-
-const DashBoard = () => {
-  return <>123</>;
+const DashBoard: React.FC = ({ children }) => {
+  return <>{children}</>;
 };
 
 export default DashBoard;

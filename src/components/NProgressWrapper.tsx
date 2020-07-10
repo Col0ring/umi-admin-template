@@ -1,13 +1,16 @@
 import React, { useEffect } from 'react';
-import { ConnectRC, connect } from 'umi';
+import { useLocation, useDispatch } from 'umi';
 
-const NProgressWrapper: ConnectRC = ({ location, children, dispatch }) => {
+const NProgressWrapper: React.FC = ({ children }) => {
+  const location = useLocation();
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    dispatch!({
+    dispatch({
       type: 'app/closeProgress',
     });
   }, [location]);
   return <>{children}</>;
 };
 
-export default connect()(NProgressWrapper);
+export default NProgressWrapper;

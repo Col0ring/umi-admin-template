@@ -1,7 +1,7 @@
 import { Button, Result } from 'antd';
 import React from 'react';
-import { history } from 'umi';
-
+import { history, dynamic } from 'umi';
+dynamic(() => {});
 const NoFoundPage: React.FC<{}> = () => (
   <Result
     status="404"

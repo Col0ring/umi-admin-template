@@ -46,14 +46,15 @@ export default {
         phone: '123456789',
         name: 'admin',
       };
-      const flag = Math.random() * 10 > 3 ? true : false;
-      setTimeout(() => {
-        if (flag) {
-          res.send({ user, code: 200 });
-        } else {
-          res.send({ msg: '用户登陆信息有误，请重新登陆', code: 401 });
-        }
-      }, 1000);
+      // const flag = Math.random() * 10 > 3 ? true : false;
+      // setTimeout(() => {
+      //   if (flag) {
+      //     res.send({ user, code: 200 });
+      //   } else {
+      //     res.send({ msg: '用户登陆信息有误，请重新登陆', code: 401 });
+      //   }
+      // }, 1000);
+      res.send({ user, code: 200 });
     } else {
       res.send({ msg: '用户登陆信息有误，请重新登陆', code: 401 });
     }
