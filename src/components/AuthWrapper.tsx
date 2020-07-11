@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { ConnectRC, connect, AuthProps, Loading, Redirect } from 'umi';
+import { matchPath } from 'react-router-dom';
 import PageLoading from '@/components/PageLoading';
 
 type AuthWrapperProps = Pick<AuthProps, 'isLogin' | 'user'>;
@@ -21,8 +22,10 @@ const AuthWrapper: ConnectRC<AuthWrapperProps> = ({
     }
   }, [pathname]);
 
+  const isLoginPage = matchPath(pathname, { path: '/login' });
+
   if (isLogin) {
-    if (pathname === '/login') {
+    if (isLoginPage) {
       return <Redirect to="/"></Redirect>;
     }
     if (user) {
@@ -31,7 +34,7 @@ const AuthWrapper: ConnectRC<AuthWrapperProps> = ({
       return <PageLoading tip="正在获取用户信息" />;
     }
   } else {
-    if (pathname === '/login') {
+    if (isLoginPage) {
       return <>{children}</>;
     } else {
       return <Redirect to="/login"></Redirect>;

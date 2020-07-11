@@ -5,7 +5,7 @@ import {
   OpenKeysMap,
   BreadCrumbsMap,
 } from '@/interfaces/app';
-import pathToRegexp from 'path-to-regexp';
+// import pathToRegexp from 'path-to-regexp';
 
 // export const getConvertedMenus = (menus: OriginMenuItem[]): ConvertedMenus => {
 //   menus = JSON.parse(JSON.stringify(menus));
@@ -53,9 +53,12 @@ export const getLayoutData = (menus: OriginMenuItem[]): LayoutData => {
     level: number = 1,
     parentKey: null | string = null,
   ) => {
-    if (menu.name && menu.path) {
+    const displayPath = menu.redirect || menu.path;
+    if (menu.name && displayPath) {
       const key = menu.key || menu.path;
-      menu.pattern = pathToRegexp(key);
+      if (!key) {
+        return;
+      }
       menu.parentKey = parentKey;
       menu.level = level;
       if (parentKey) {
@@ -68,8 +71,9 @@ export const getLayoutData = (menus: OriginMenuItem[]): LayoutData => {
           }
         } else {
           if (openKeysMap[parentKey]) {
-            // 一定会有重复的
-            openKeysMap[key] = [...openKeysMap[parentKey], parentKey];
+            if (key)
+              // 一定会有重复的
+              openKeysMap[key] = [...openKeysMap[parentKey], parentKey];
           } else {
             openKeysMap[key] = [parentKey];
           }
@@ -91,7 +95,6 @@ export const getLayoutData = (menus: OriginMenuItem[]): LayoutData => {
             breadCrumbsMap[parentKey].length >= level
               ? breadCrumbsMap[parentKey].slice(0, -1)
               : breadCrumbsMap[parentKey];
-          // console.log(parentKey);
 
           breadCrumbsMap[key] = [...breadCrumbs, menu as MenuItem];
         } else {

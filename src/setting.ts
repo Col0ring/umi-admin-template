@@ -4,4 +4,5 @@ export default {
   // use alias @ replace src
   menuLogo: '',
   menuTitle: 'Umi Admin',
+  autoGetTitle: true,
 };

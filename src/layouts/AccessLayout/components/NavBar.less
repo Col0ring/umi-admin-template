@@ -1,0 +1,39 @@
+.navbar {
+  background: #fff;
+  padding: 0 20px 0 0;
+  .content {
+    height: 100%;
+    .left {
+      display: flex;
+      align-items: center;
+      .trigger {
+        font-size: 18px;
+        padding: 0 24px;
+        cursor: pointer;
+        transition: color 0.3s;
+        &:hover {
+          color: @primary-color;
+        }
+      }
+      .breadcrumbScrollWrapper {
+        :global {
+          .ScrollbarsCustom-Wrapper {
+            bottom: 0 !important;
+          }
+        }
+        .breadcrumb {
+          display: flex;
+          justify-content: flex-start !important;
+          align-items: center;
+          height: 100%;
+          width: 100%;
+        }
+      }
+    }
+    .right {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+  }
+}

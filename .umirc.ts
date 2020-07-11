@@ -7,9 +7,7 @@ export default defineConfig({
   theme: {
     ...variables,
   },
-  dynamicImport: {
-    loading: '@/components/PageLoading',
-  },
+  title: 'Umi-Admin',
   routes: [
     {
       path: '/',
@@ -19,16 +17,18 @@ export default defineConfig({
         {
           path: '/login',
           component: '@/pages/login',
+          title: 'Umi-Admin-login',
         },
         {
           path: '/',
-          component: '@/layouts/AccessLayout/index2',
+          component: '@/layouts/AccessLayout/index',
           routes: [
             {
               path: '/',
               redirect: '/dashboard',
             },
             {
+              breadcrumbName: '首页',
               path: '/dashboard',
               name: 'dashboard',
               icon: 'GroupOutlined',
@@ -46,17 +46,19 @@ export default defineConfig({
                   component: '@/pages/dashboard',
                 },
                 {
-                  path: 'dashboard2',
+                  path: '/dashboard2',
                   name: 'dashboard2',
                   component: '@/pages/dashboard',
                   routes: [
                     {
-                      path: 'dashboard2/:id',
+                      // path: '/dashboard2',
+                      key: '111',
                       name: 'dashboar22',
+                      redirect: '/dashboard3',
                       component: '@/pages/dashboard',
                       routes: [
                         {
-                          path: 'dashboard2',
+                          path: '/dashboard2',
                           name: 'dashboard222',
                           component: '@/pages/dashboard',
                         },
@@ -79,6 +81,10 @@ export default defineConfig({
       ],
     },
   ],
+  dynamicImport: {
+    loading: '@/components/PageLoading',
+  },
+
   // 跨域处理，mock 数据时暂时不需要
   // proxy: {
   //   '/api': {

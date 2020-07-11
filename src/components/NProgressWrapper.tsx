@@ -10,6 +10,7 @@ const NProgressWrapper: React.FC = ({ children }) => {
       type: 'app/closeProgress',
     });
   }, [location]);
+
   return <>{children}</>;
 };
 
