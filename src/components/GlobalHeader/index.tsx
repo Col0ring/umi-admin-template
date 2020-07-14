@@ -1,16 +1,21 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useImmer } from 'use-immer';
-import { Avatar, Dropdown, Badge } from 'antd';
-import { DownOutlined, BellOutlined } from '@ant-design/icons';
+import { Avatar, Dropdown, Badge, Space } from 'antd';
+import {
+  DownOutlined,
+  BellOutlined,
+  FullscreenOutlined,
+} from '@ant-design/icons';
 import HeaderDropdown from '../HeaderDropdown';
 import classnames from 'classnames';
 import styles from './index.less';
+import { Context as LayoutContext } from '@/layouts/AccessLayout';
 
 const GlobalHeader: React.FC = () => {
   const [state, setState] = useImmer({
     visible: false,
   });
-
+  const { toggleFull } = useContext(LayoutContext);
   const onVisibleChange = (visible: boolean) => {
     setState(state => {
       state.visible = visible;
@@ -22,10 +27,13 @@ const GlobalHeader: React.FC = () => {
   });
   return (
     <div className={styles.globalHeaderContainer}>
-      <div className={styles.badges}>
-        <Badge dot>
-          <BellOutlined />
-        </Badge>
+      <div className={styles.tools}>
+        <Space>
+          <Badge dot>
+            <BellOutlined />
+          </Badge>
+          <FullscreenOutlined onClick={toggleFull} />
+        </Space>
       </div>
       <Dropdown
         arrow

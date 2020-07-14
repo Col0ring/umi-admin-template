@@ -6,6 +6,7 @@ import * as Icons from '@ant-design/icons';
 import { Link, useSelector, useDispatch, useLocation } from 'umi';
 import { OriginMenuItem } from '@/interfaces/app';
 import useSiderBarShow from '@/hooks/useSiderBarShow';
+import { urlReg } from '@/utils/validators';
 import styles from './SiderBar.less';
 
 const { SubMenu, Item } = Menu;
@@ -15,9 +16,9 @@ interface SiderBarProps {
 }
 
 const renderMenu = (menu: OriginMenuItem): React.ReactNode => {
-  const displayPath = menu.redirect || menu.path;
+  const displayPath = menu.externalPath || menu.redirect || menu.path;
   if (displayPath && menu.name) {
-    const key = menu.key || menu.path;
+    const key = menu.key || menu.externalPath || menu.path;
     if (!key) {
       return null;
     }
@@ -34,11 +35,19 @@ const renderMenu = (menu: OriginMenuItem): React.ReactNode => {
 
     return (
       <Item key={key}>
-        <Link to={displayPath}>
-          {typeof menu.icon === 'string' &&
-            React.createElement((Icons as AnyObject)[menu.icon])}
-          <span>{menu.name}</span>
-        </Link>
+        {urlReg.test(displayPath) ? (
+          <a href={displayPath} target="_blank" rel="noopener">
+            {typeof menu.icon === 'string' &&
+              React.createElement((Icons as AnyObject)[menu.icon])}
+            <span>{menu.name}</span>
+          </a>
+        ) : (
+          <Link to={displayPath}>
+            {typeof menu.icon === 'string' &&
+              React.createElement((Icons as AnyObject)[menu.icon])}
+            <span>{menu.name}</span>
+          </Link>
+        )}
       </Item>
     );
   } else {

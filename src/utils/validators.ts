@@ -29,3 +29,5 @@ export function phoneValidator(options: Rule = {}): Rule {
     ...options,
   };
 }
+
+export const urlReg = /^(((ht|f)tps?):\/\/)?[\w-]+(\.[\w-]+)+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/;

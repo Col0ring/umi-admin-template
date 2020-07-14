@@ -53,12 +53,13 @@ export const getLayoutData = (menus: OriginMenuItem[]): LayoutData => {
     level: number = 1,
     parentKey: null | string = null,
   ) => {
-    const displayPath = menu.redirect || menu.path;
+    const displayPath = menu.externalPath || menu.redirect || menu.path;
     if (menu.name && displayPath) {
-      const key = menu.key || menu.path;
+      const key = menu.key || menu.externalPath || menu.path;
       if (!key) {
         return;
       }
+      menu.displayPath = displayPath;
       menu.parentKey = parentKey;
       menu.level = level;
       if (parentKey) {

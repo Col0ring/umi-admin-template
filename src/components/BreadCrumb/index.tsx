@@ -5,20 +5,21 @@ import styles from './index.less';
 import { Breadcrumb } from 'antd';
 import { MenuItem } from '@/interfaces/app';
 import { compile } from 'path-to-regexp';
+import { urlReg } from '@/utils/validators';
 const BreadCrumbs: React.FC = () => {
   const { pathname } = useLocation();
   const { breadCrumbs }: { breadCrumbs: MenuItem[] } = useSelector(state => ({
     breadCrumbs: state.app.breadCrumbs,
   }));
   const match = useRouteMatch([
-    breadCrumbs[breadCrumbs.length - 1]?.path,
+    breadCrumbs[breadCrumbs.length - 1]?.displayPath,
     pathname,
   ]);
 
   return (
     <Breadcrumb className={styles.breadcrumbs}>
       {breadCrumbs.map((breadcrumb, index) => {
-        let displayPath = breadcrumb.redirect || breadcrumb.path;
+        let displayPath = breadcrumb.displayPath;
         if (match && Object.keys(match.params).length !== 0 && displayPath) {
           displayPath = compile(displayPath)(match.params);
         }
@@ -31,9 +32,15 @@ const BreadCrumbs: React.FC = () => {
           <Breadcrumb.Item key={displayPath}>
             <span className={classname}>
               {index !== breadCrumbs.length - 1 && displayPath !== pathname ? (
-                <Link replace to={displayPath}>
-                  {breadcrumbName}
-                </Link>
+                urlReg.test(displayPath) ? (
+                  <a href={displayPath} target="_blank" rel="noopener">
+                    {breadcrumbName}
+                  </a>
+                ) : (
+                  <Link replace to={displayPath}>
+                    {breadcrumbName}
+                  </Link>
+                )
               ) : (
                 <span>{breadcrumbName}</span>
               )}

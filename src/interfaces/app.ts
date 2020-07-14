@@ -8,6 +8,7 @@ export interface OriginMenuItem extends IRoute {
   name?: string;
   path?: string;
   key?: string;
+  externalPath?: string;
   redirect?: string;
 }
 
@@ -15,7 +16,7 @@ export type MenuItem = OriginMenuItem & {
   parentKey: string | null;
   level: number;
   name: string;
-  path: string;
+  displayPath: string;
 };
 
 export type ConvertedMenus = AnyObject<MenuItem[]>;
