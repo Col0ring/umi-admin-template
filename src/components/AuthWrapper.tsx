@@ -12,7 +12,7 @@ const AuthWrapper: ConnectRC<AuthWrapperProps> = ({
   user,
   dispatch,
 }) => {
-  const { pathname } = location;
+  const { pathname, search } = location;
   // 必须在 useEffect 中请求，否则会有渲染错误
   useEffect(() => {
     if (isLogin && !user) {
@@ -37,7 +37,11 @@ const AuthWrapper: ConnectRC<AuthWrapperProps> = ({
     if (isLoginPage) {
       return <>{children}</>;
     } else {
-      return <Redirect to="/login"></Redirect>;
+      return (
+        <Redirect
+          to={{ pathname: '/login', search: `?redirect=${pathname + search}` }}
+        ></Redirect>
+      );
     }
   }
 };

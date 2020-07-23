@@ -61,7 +61,7 @@ const PermissionModel: PermissionModelType = {
           payload: res.token,
         });
         setToken(res.token);
-        yield put(routerRedux.push('/'));
+        yield put(routerRedux.push(payload.redirect || '/'));
       }
     },
     *getUserInfo(action, { call, put }) {

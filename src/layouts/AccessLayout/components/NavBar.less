@@ -3,37 +3,46 @@
   padding: 0 20px 0 0;
   .content {
     height: 100%;
-    .left {
+    .collapse {
       display: flex;
+      justify-content: center;
       align-items: center;
       .trigger {
         font-size: 18px;
-        padding: 0 24px;
         cursor: pointer;
         transition: color 0.3s;
         &:hover {
           color: @primary-color;
         }
       }
-      .breadcrumbScrollWrapper {
-        :global {
-          .ScrollbarsCustom-Wrapper {
-            bottom: 0 !important;
-          }
-        }
-        .breadcrumb {
-          display: flex;
-          justify-content: flex-start !important;
-          align-items: center;
-          height: 100%;
-          width: 100%;
+    }
+    .breadcrumbScrollWrapper {
+      :global {
+        .ScrollbarsCustom-Wrapper {
+          bottom: 0 !important;
         }
       }
+      .breadcrumb {
+        display: flex;
+        justify-content: flex-start !important;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+      }
     }
-    .right {
+
+    .avatarContainer {
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: flex-end;
     }
+  }
+}
+
+@media (max-width: @screen-xs) {
+  .navbar {
+    height: 50px;
+    padding: 0 5px 0 0;
   }
 }

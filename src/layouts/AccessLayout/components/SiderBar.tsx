@@ -6,8 +6,10 @@ import * as Icons from '@ant-design/icons';
 import { Link, useSelector, useDispatch, useLocation } from 'umi';
 import { OriginMenuItem } from '@/interfaces/app';
 import useSiderBarShow from '@/hooks/useSiderBarShow';
+import Logo from './Logo';
 import { urlReg } from '@/utils/validators';
 import styles from './SiderBar.less';
+import setting from '@/setting';
 
 const { SubMenu, Item } = Menu;
 const { Sider } = Layout;
@@ -134,7 +136,7 @@ const SiderBar: React.FC<SiderBarProps> = ({ menus }) => {
       collapsed={collapsed}
       onBreakpoint={toggleCollapse}
     >
-      <div className={styles.logo} />
+      <Logo className={styles.logo} title={setting.menuTitle} />
       <Menu
         mode="inline"
         selectedKeys={selectedKeys}

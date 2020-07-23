@@ -28,7 +28,7 @@ const GlobalHeader: React.FC = () => {
   return (
     <div className={styles.globalHeaderContainer}>
       <div className={styles.tools}>
-        <Space>
+        <Space size="middle">
           <Badge dot>
             <BellOutlined />
           </Badge>

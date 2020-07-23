@@ -8,7 +8,7 @@ import { compile } from 'path-to-regexp';
 import { urlReg } from '@/utils/validators';
 const BreadCrumbs: React.FC = () => {
   const { pathname } = useLocation();
-  const { breadCrumbs }: { breadCrumbs: MenuItem[] } = useSelector(state => ({
+  const { breadCrumbs } = useSelector(state => ({
     breadCrumbs: state.app.breadCrumbs,
   }));
   const match = useRouteMatch([

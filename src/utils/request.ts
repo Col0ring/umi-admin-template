@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { getDvaApp } from 'umi';
 import { message, Modal } from 'antd';
 import { getToken } from '@/utils/auth';
@@ -9,14 +9,39 @@ const service = axios.create({
   baseURL,
 });
 
+function retry(config: AxiosRequestConfig) {
+  if (config.headers.noRetry) {
+    return false;
+  }
+  if (config.headers.retryCount <= 3) {
+    return service(config);
+  }
+  return false;
+}
+
+function errorHandler(count: number, msg: string) {
+  if (count > 3) {
+    message.error(msg);
+  }
+}
+
 service.interceptors.request.use(
   config => {
+    config.cancelToken = new axios.CancelToken(cancel => {
+      window._axiosPromiseArr = window._axiosPromiseArr || [];
+      window._axiosPromiseArr.push(cancel);
+    });
     config.headers.token = getToken();
+    if (typeof config.headers.retryCount === 'number') {
+      config.headers.retryCount++;
+    } else {
+      config.headers.retryCount = 0;
+    }
     return config;
   },
-  (error: Error) => {
-    message.error(error.message);
-    return false;
+  error => {
+    errorHandler(error.config.headers.retryCount, error.message);
+    return retry(error.config);
   },
 );
 
@@ -30,7 +55,6 @@ service.interceptors.response.use(
         title: '获取信息失败',
         content: data.msg,
         async onOk() {
-          // 这里可以移动到 AuthWrapper 中，这种模式也不是 react 推荐的
           const app = getDvaApp();
           app._store.dispatch({
             type: 'permission/resetUser',
@@ -43,9 +67,16 @@ service.interceptors.response.use(
       return false;
     }
   },
-  (error: Error) => {
-    message.error(error.message);
-    return false;
+  error => {
+    if (axios.isCancel(error)) {
+      return false;
+    }
+    if (error.message.includes('timeout')) {
+      error.message = '请求超时';
+    }
+    errorHandler(error.config.headers.retryCount, error.message);
+
+    return retry(error.config);
   },
 );
 

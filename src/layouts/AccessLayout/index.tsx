@@ -1,28 +1,37 @@
-import React, { useEffect, createContext } from 'react';
+import React, { useEffect, createContext, useRef } from 'react';
 import { Layout } from 'antd';
-import { connect, useSelector, ConnectRC, useLocation, history } from 'umi';
-import { useFullscreen } from '@umijs/hooks';
+import { connect, useSelector, ConnectRC, useLocation } from 'umi';
+import { useFullscreen } from 'ahooks';
 import SiderBar from './components/SiderBar';
 import MainContent from './components/MainContent';
 import NavBar from './components/NavBar';
+import setting from '@/setting';
 export const Context = createContext<AnyObject>({});
 const AccessLayout: ConnectRC = props => {
-  const { pathname, search } = useLocation();
-  const { ref, toggleFull } = useFullscreen<HTMLDivElement>();
+  const { pathname } = useLocation();
+  const fullRef = useRef<HTMLDivElement | null>(null);
+  const [, { toggleFull }] = useFullscreen(
+    fullRef as React.MutableRefObject<HTMLDivElement>,
+  );
 
   const {
     dispatch,
     route: { routes },
     children,
   } = props;
-  const { convertedMenus } = useSelector(({ app }) => ({
+  const { convertedMenus, title } = useSelector(({ app }) => ({
     convertedMenus: app.convertedMenus,
     title: app.title,
   }));
 
+  // 设置标题
   useEffect(() => {
-    history.replace(pathname + search);
+    setTimeout(() => {
+      document.title = setting.menuTitle + `-${title}`;
+    });
+  }, [title]);
 
+  useEffect(() => {
     dispatch({
       type: 'app/setLayoutData',
       payload: routes,
@@ -40,7 +49,7 @@ const AccessLayout: ConnectRC = props => {
 
   return (
     <Context.Provider value={{ toggleFull }}>
-      <div ref={ref}>
+      <div ref={fullRef}>
         <Layout style={{ minHeight: '100vh' }}>
           <SiderBar menus={routes || []} />
           <Layout>

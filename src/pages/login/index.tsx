@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'umi';
+import { useSelector, useDispatch, useLocation } from 'umi';
 import ParticlesBg from 'particles-bg';
 import { Tabs } from 'antd';
 import PasswordForm from './components/PasswordForm';
@@ -15,12 +15,15 @@ const Login: React.FC = () => {
     loading: loading.effects['permission/login'],
   }));
   const dispatch = useDispatch();
+  // 这里修改了
+  const { query } = useLocation();
 
   const onPasswordLogin = (username: string, password: string) => {
     dispatch({
       type: 'permission/login',
       payload: {
         type: 'password',
+        redirect: query.redirect,
         data: {
           username,
           password,
@@ -33,6 +36,7 @@ const Login: React.FC = () => {
       type: 'permission/login',
       payload: {
         type: 'code',
+        redirect: query.redirect,
         data: {
           phone,
           code,

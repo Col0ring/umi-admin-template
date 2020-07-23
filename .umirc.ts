@@ -1,4 +1,5 @@
 import { defineConfig } from 'umi';
+import setting from './src/setting';
 import variables from './theme/variables';
 export default defineConfig({
   nodeModulesTransform: {
@@ -7,7 +8,7 @@ export default defineConfig({
   theme: {
     ...variables,
   },
-  title: 'Umi-Admin',
+  title: setting.menuTitle,
   routes: [
     {
       path: '/',
@@ -17,7 +18,7 @@ export default defineConfig({
         {
           path: '/login',
           component: '@/pages/login',
-          title: 'Umi-Admin-login',
+          title: 'Umi-Admin-Login',
         },
         {
           path: '/',
@@ -77,6 +78,7 @@ export default defineConfig({
                 },
               ],
             },
+
             {
               component: '@/pages/404',
             },
@@ -85,9 +87,9 @@ export default defineConfig({
       ],
     },
   ],
-  dynamicImport: {
-    loading: '@/components/PageLoading',
-  },
+  // dynamicImport: {
+  //   loading: '@/components/PageLoading',
+  // },
 
   // 跨域处理，mock 数据时暂时不需要
   // proxy: {
