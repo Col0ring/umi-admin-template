@@ -3,11 +3,15 @@ export interface OriginMenuItem extends IRoute {
   routes?: OriginMenuItem[];
   hideChildrenInMenu?: boolean;
   hideInMenu?: boolean;
+  hideInBreadcrumb?: boolean;
+  hideInTabs?: boolean;
   breadcrumbName?: string;
-  icon?: React.ReactNode;
+  tabName?: string;
+  icon?: string;
   name?: string;
   path?: string;
   key?: string;
+  activePath?: string;
   externalPath?: string;
   redirect?: string;
 }

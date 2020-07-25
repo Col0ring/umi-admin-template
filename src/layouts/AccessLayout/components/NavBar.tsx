@@ -1,12 +1,14 @@
 import React, { memo } from 'react';
 import { useDispatch, useSelector } from 'umi';
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
-import { Layout, Row, Col } from 'antd';
+import { Layout, Row, Col, Affix } from 'antd';
 import { Scrollbar } from 'react-scrollbars-custom';
 import GlobalHeader from '@/components/GlobalHeader';
 import BreadCrumb from '@/components/BreadCrumb';
 import HeaderTabPane from '@/components/HeaderTabPane';
+import setting from '@/setting';
 import styles from './NavBar.less';
+import useSiderBarShow from '@/hooks/useSiderBarShow';
 const { Header } = Layout;
 
 const NavBar: React.FC = () => {
@@ -14,6 +16,7 @@ const NavBar: React.FC = () => {
   const { collapsed } = useSelector(({ app }) => ({
     collapsed: app.collapsed,
   }));
+  const isSiderBarShow = useSiderBarShow();
 
   const toggleCollapse = () => {
     dispatch({
@@ -21,7 +24,9 @@ const NavBar: React.FC = () => {
       payload: !collapsed,
     });
   };
-  return (
+  return React.createElement(
+    setting.globalHeaderFixed || !isSiderBarShow ? Affix : 'div',
+    null,
     <div>
       <Header className={styles.navbar}>
         <Row className={styles.content} gutter={5} justify="space-between">
@@ -60,8 +65,8 @@ const NavBar: React.FC = () => {
           </Col>
         </Row>
       </Header>
-      <HeaderTabPane />
-    </div>
+      {setting.showTabs && <HeaderTabPane />}
+    </div>,
   );
 };
 export default memo(NavBar);

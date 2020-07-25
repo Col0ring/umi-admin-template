@@ -3,7 +3,6 @@ import { Link, useSelector, useLocation, useRouteMatch } from 'umi';
 import classnames from 'classnames';
 import styles from './index.less';
 import { Breadcrumb } from 'antd';
-import { MenuItem } from '@/interfaces/app';
 import { compile } from 'path-to-regexp';
 import { urlReg } from '@/utils/validators';
 const BreadCrumbs: React.FC = () => {
@@ -28,7 +27,7 @@ const BreadCrumbs: React.FC = () => {
           [styles.notAllowed]: displayPath === pathname,
           [styles.active]: index === breadCrumbs.length - 1,
         });
-        return (
+        return breadcrumb.hideInBreadcrumb || !breadcrumbName ? null : (
           <Breadcrumb.Item key={displayPath}>
             <span className={classname}>
               {index !== breadCrumbs.length - 1 && displayPath !== pathname ? (

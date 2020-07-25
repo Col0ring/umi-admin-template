@@ -1,14 +1,15 @@
 import React from 'react';
 import { useSelector, useDispatch, useHistory } from 'umi';
-import { Tabs } from 'antd';
+import { Tabs, Space } from 'antd';
+import { CloseCircleOutlined } from '@ant-design/icons';
 import { TabsProps } from 'antd/es/tabs';
 import styles from './index.less';
 const { TabPane } = Tabs;
 
 const HeaderTabPane: React.FC = () => {
-  const { tabPanes, selectedKeys } = useSelector(({ app }) => ({
+  const { tabPanes, tabKeys } = useSelector(({ app }) => ({
     tabPanes: app.tabPanes,
-    selectedKeys: app.selectedKeys,
+    tabKeys: app.tabKeys,
   }));
   const dispatch = useDispatch();
   const history = useHistory();
@@ -20,13 +21,20 @@ const HeaderTabPane: React.FC = () => {
     });
   };
   const onTabClick: TabsProps['onTabClick'] = key => {
-    if (selectedKeys[0] === key) return;
+    if (key === 'app_close_all') {
+      return dispatch({
+        type: 'app/setTabPanes',
+        payload: [],
+      });
+    }
+    if (tabKeys[0] === key) return;
     history.replace(key);
   };
+
   return (
     <div className={styles.headerTabPane}>
       <Tabs
-        activeKey={selectedKeys[0]}
+        activeKey={tabKeys[0]}
         onEdit={onPaneDelete}
         onTabClick={onTabClick}
         type="editable-card"
@@ -34,8 +42,28 @@ const HeaderTabPane: React.FC = () => {
         tabBarStyle={{ margin: 0 }}
       >
         {tabPanes.map(pane => {
-          return <TabPane tab={pane.name} key={pane.displayPath}></TabPane>;
+          const tabName = pane.tabName || pane.name;
+          return pane.hideInTabs || !tabName ? null : (
+            <TabPane
+              tab={pane.tabName || pane.name}
+              key={pane.displayPath}
+            ></TabPane>
+          );
         })}
+        {tabPanes.filter(
+          pane => !pane.hideInTabs && (pane.tabName || pane.name),
+        ).length > 0 && (
+          <TabPane
+            tab={
+              <Space size={5}>
+                关闭所有
+                <CloseCircleOutlined />
+              </Space>
+            }
+            key="app_close_all"
+            closable={false}
+          ></TabPane>
+        )}
       </Tabs>
     </div>
   );

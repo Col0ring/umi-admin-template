@@ -1,6 +1,7 @@
 import React, { memo, useEffect } from 'react';
+import classnames from 'classnames';
 import { useImmer } from 'use-immer';
-import { Menu, Layout } from 'antd';
+import { Menu, Layout, Drawer } from 'antd';
 import { MenuProps } from 'antd/es/menu';
 import * as Icons from '@ant-design/icons';
 import { Link, useSelector, useDispatch, useLocation } from 'umi';
@@ -19,12 +20,12 @@ interface SiderBarProps {
 
 const renderMenu = (menu: OriginMenuItem): React.ReactNode => {
   const displayPath = menu.externalPath || menu.redirect || menu.path;
-  if (displayPath && menu.name) {
+  if (!menu.hideInMenu && menu.name && displayPath) {
     const key = menu.key || menu.externalPath || menu.path;
     if (!key) {
       return null;
     }
-    if (menu.routes && menu.routes.length > 0) {
+    if (!menu.hideChildrenInMenu && menu.routes && menu.routes.length > 0) {
       const Icon =
         typeof menu.icon === 'string' &&
         React.createElement((Icons as AnyObject)[menu.icon]);
@@ -99,6 +100,12 @@ const SiderBar: React.FC<SiderBarProps> = ({ menus }) => {
       state.openKeys = keys as string[];
     });
   };
+  const onDrawerClose = () => {
+    dispatch({
+      type: 'app/toggleCollapse',
+      payload: !collapsed,
+    });
+  };
 
   useEffect(() => {
     setState(state => {
@@ -126,14 +133,29 @@ const SiderBar: React.FC<SiderBarProps> = ({ menus }) => {
     }
   }, [pathname]);
 
-  return (
+  const siderbarClassName = classnames(styles.siderbar, {
+    [styles.fixed]: isSiderBarShow,
+  });
+
+  return React.createElement(
+    isSiderBarShow ? React.Fragment : Drawer,
+    isSiderBarShow
+      ? null
+      : {
+          bodyStyle: { padding: 0 },
+          width: 200,
+          closable: false,
+          placement: 'left',
+          visible: !collapsed,
+          onClose: onDrawerClose,
+        },
     <Sider
-      className={styles.siderbar}
+      className={siderbarClassName}
       trigger={null}
       collapsedWidth={isSiderBarShow ? 80 : 0}
       collapsible
       breakpoint="md"
-      collapsed={collapsed}
+      collapsed={isSiderBarShow ? collapsed : false}
       onBreakpoint={toggleCollapse}
     >
       <Logo className={styles.logo} title={setting.menuTitle} />
@@ -146,7 +168,7 @@ const SiderBar: React.FC<SiderBarProps> = ({ menus }) => {
       >
         {renderMenus(menus)}
       </Menu>
-    </Sider>
+    </Sider>,
   );
 };
 

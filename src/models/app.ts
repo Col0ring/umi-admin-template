@@ -4,17 +4,25 @@ import { getLayoutData, LayoutData } from '@/utils/app';
 import { ConvertedMenus, MenuItem } from '@/interfaces/app';
 import { matchPath } from 'react-router-dom';
 import setting from '@/setting';
-function pushTabPane(tabPanes: MenuItem[], pane: MenuItem) {
-  if (!tabPanes.some(item => item.displayPath === pane.displayPath)) {
+function pushTabPane(tabPanes: MenuItem[], pane: MenuItem, path: string) {
+  pane = { ...pane };
+  pane.displayPath = path;
+  const idx = tabPanes.findIndex(item =>
+    matchPath(item.displayPath, { path: pane.displayPath, exact: true }),
+  );
+  if (idx === -1) {
     return [...tabPanes, pane];
   }
-  return tabPanes;
+  const clone = [...tabPanes];
+  clone.splice(idx, 1, pane);
+  return clone;
 }
 
 export interface AppModelState extends LayoutData {
   title: string;
   collapsed: boolean;
   selectedKeys: string[];
+  tabKeys: string[];
   openKeys: string[];
   breadCrumbs: MenuItem[];
   tabPanes: MenuItem[];
@@ -27,6 +35,7 @@ interface AppModelType {
     toggleCollapse: Reducer<AppModelState>;
     setLayoutData: Reducer<AppModelState>;
     setOpenKeys: Reducer<AppModelState>;
+    setTabKeys: Reducer<AppModelState>;
     setBreadCrumbs: Reducer<AppModelState>;
     setTabPanes: Reducer<AppModelState>;
     setSelectedKeys: Reducer<AppModelState>;
@@ -49,6 +58,7 @@ const AppModel: AppModelType = {
     openKeysMap: {},
     breadCrumbsMap: {},
     selectedKeys: [],
+    tabKeys: [],
     openKeys: [],
     breadCrumbs: [],
     tabPanes: JSON.parse(localStorage.getItem('appTabPanes') ?? '[]'),
@@ -79,6 +89,9 @@ const AppModel: AppModelType = {
     setSelectedKeys(state, { payload }) {
       return { ...state!, selectedKeys: payload };
     },
+    setTabKeys(state, { payload }) {
+      return { ...state!, tabKeys: payload };
+    },
     setTitle(state, { payload }) {
       const { convertedMenus } = state!;
       if (payload.length !== 0 && setting.autoGetTitle) {
@@ -107,27 +120,32 @@ const AppModel: AppModelType = {
       const { convertedMenus, openKeysMap, breadCrumbsMap, tabPanes } = state;
       let currentTabPanes = tabPanes;
       if (convertedMenus[payload]) {
-        selectedKeys = [payload];
         if (openKeysMap[payload]) {
           openKeys = openKeysMap[payload];
         }
         const current = convertedMenus[payload];
+        selectedKeys = [current[current.length - 1].activePath || payload];
+
         currentTabPanes = pushTabPane(
           currentTabPanes,
           current[current.length - 1],
+          payload,
         );
 
         breadCrumbs = breadCrumbsMap[payload];
       } else {
         Object.keys(convertedMenus).some(key => {
-          if (matchPath(payload, { path: key })) {
-            selectedKeys = [key];
+          if (matchPath(payload, { path: key, exact: true })) {
+            // console.log(matchRoute);
             openKeys = openKeysMap[key];
             breadCrumbs = breadCrumbsMap[key];
             const current = convertedMenus[key];
+            selectedKeys = [current[current.length - 1].activePath || key];
+
             currentTabPanes = pushTabPane(
               currentTabPanes,
               current[current.length - 1],
+              payload,
             );
 
             return true;
@@ -135,9 +153,14 @@ const AppModel: AppModelType = {
           return false;
         });
       }
+
       yield put({
         type: 'setSelectedKeys',
         payload: selectedKeys,
+      });
+      yield put({
+        type: 'setTabKeys',
+        payload: [payload],
       });
       yield put({
         type: 'setOpenKeys',

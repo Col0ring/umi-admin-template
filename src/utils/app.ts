@@ -54,7 +54,7 @@ export const getLayoutData = (menus: OriginMenuItem[]): LayoutData => {
     parentKey: null | string = null,
   ) => {
     const displayPath = menu.externalPath || menu.redirect || menu.path;
-    if (menu.name && displayPath) {
+    if (displayPath) {
       const key = menu.key || menu.externalPath || menu.path;
       if (!key) {
         return;
@@ -62,6 +62,7 @@ export const getLayoutData = (menus: OriginMenuItem[]): LayoutData => {
       menu.displayPath = displayPath;
       menu.parentKey = parentKey;
       menu.level = level;
+
       if (parentKey) {
         if (openKeysMap[key]) {
           if (!openKeysMap[key].includes(parentKey)) {

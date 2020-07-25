@@ -22,7 +22,7 @@ const AuthWrapper: ConnectRC<AuthWrapperProps> = ({
     }
   }, [pathname]);
 
-  const isLoginPage = matchPath(pathname, { path: '/login' });
+  const isLoginPage = matchPath(pathname, { path: '/login', exact: true });
 
   if (isLogin) {
     if (isLoginPage) {
