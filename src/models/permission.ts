@@ -12,18 +12,18 @@ export interface UserProps {
   phone: string;
   email: string;
 }
-export interface AuthProps {
+export interface PermissionModelState {
   isLogin: boolean;
   token: string | null;
   user: UserProps | null;
 }
 
 interface PermissionModelType {
-  namesapce: string;
-  state: AuthProps;
+  namespace: string;
+  state: PermissionModelState;
   reducers: {
-    setToken: Reducer<AuthProps>;
-    setUser: Reducer<AuthProps>;
+    setToken: Reducer<PermissionModelState>;
+    setUser: Reducer<PermissionModelState>;
   };
   effects: {
     login: Effect;
@@ -33,7 +33,7 @@ interface PermissionModelType {
 }
 
 const PermissionModel: PermissionModelType = {
-  namesapce: 'permission',
+  namespace: 'permission',
   state: {
     isLogin: getToken() ? true : false,
     user: null,

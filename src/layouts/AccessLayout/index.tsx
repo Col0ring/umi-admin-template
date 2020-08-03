@@ -1,19 +1,18 @@
 import React, { useEffect, createContext, useRef } from 'react';
 import { Layout } from 'antd';
-import { connect, useSelector, ConnectRC, useLocation } from 'umi';
+import { connect, useSelector, ConnectRC, useLocation, Helmet } from 'umi';
 import { useFullscreen } from 'ahooks';
 import SiderBar from './components/SiderBar';
 import MainContent from './components/MainContent';
 import NavBar from './components/NavBar';
+import GlobalFooter from '@/components/GlobalFooter';
 import setting from '@/setting';
 import useSiderBarShow from '@/hooks/useSiderBarShow';
 export const Context = createContext<AnyObject>({});
 const AccessLayout: ConnectRC = props => {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const fullRef = useRef<HTMLDivElement | null>(null);
-  const [, { toggleFull }] = useFullscreen(
-    fullRef as React.MutableRefObject<HTMLDivElement>,
-  );
+  const [, { toggleFull }] = useFullscreen(fullRef.current);
 
   const {
     dispatch,
@@ -27,13 +26,6 @@ const AccessLayout: ConnectRC = props => {
   }));
   const isSiderBarShow = useSiderBarShow();
 
-  // 设置标题
-  useEffect(() => {
-    setTimeout(() => {
-      document.title = setting.menuTitle + `-${title}`;
-    });
-  }, [title]);
-
   useEffect(() => {
     dispatch({
       type: 'app/setLayoutData',
@@ -45,13 +37,18 @@ const AccessLayout: ConnectRC = props => {
     if (Object.keys(convertedMenus).length !== 0) {
       dispatch({
         type: 'app/setCurrentLayoutData',
-        payload: pathname,
+        payload: pathname + search,
       });
     }
-  }, [pathname, convertedMenus]);
+  }, [pathname, search, convertedMenus]);
 
   return (
     <Context.Provider value={{ toggleFull }}>
+      {/* 修改标题 */}
+      <Helmet>
+        <title>{setting.menuTitle + `-${title}`}</title>
+      </Helmet>
+
       <div ref={fullRef}>
         <Layout
           style={{
@@ -64,6 +61,7 @@ const AccessLayout: ConnectRC = props => {
           <Layout>
             <NavBar />
             <MainContent>{children}</MainContent>
+            <GlobalFooter />
           </Layout>
         </Layout>
       </div>

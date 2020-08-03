@@ -5,37 +5,6 @@ import {
   OpenKeysMap,
   BreadCrumbsMap,
 } from '@/interfaces/app';
-// import pathToRegexp from 'path-to-regexp';
-
-// export const getConvertedMenus = (menus: OriginMenuItem[]): ConvertedMenus => {
-//   menus = JSON.parse(JSON.stringify(menus));
-//   const flatMenus = (
-//     convertedMenus: ConvertedMenus = {},
-//     menu: OriginMenuItem,
-//     level: number = 1,
-//     parentKey: null | string = null,
-//   ) => {
-//     if (menu.name && menu.path) {
-//       const key = menu.key || menu.path;
-//       menu.parentKey = parentKey;
-//       menu.level = level;
-//       if (parentKey !== key) {
-//         convertedMenus[key] = [menu as MenuItem];
-//       } else {
-//         convertedMenus[key].push(menu as MenuItem);
-//       }
-//       if (menu.routes && Array.isArray(menu.routes)) {
-//         menu.routes.forEach(route => {
-//           flatMenus(convertedMenus, route, level + 1, key);
-//         });
-//       }
-//     }
-//   };
-//   return menus.reduce((pre, menu) => {
-//     flatMenus(pre, menu);
-//     return pre;
-//   }, {} as ConvertedMenus);
-// };
 
 export interface LayoutData {
   convertedMenus: ConvertedMenus;
@@ -54,6 +23,7 @@ export const getLayoutData = (menus: OriginMenuItem[]): LayoutData => {
     parentKey: null | string = null,
   ) => {
     const displayPath = menu.externalPath || menu.redirect || menu.path;
+
     if (displayPath) {
       const key = menu.key || menu.externalPath || menu.path;
       if (!key) {
@@ -133,50 +103,3 @@ export const getLayoutData = (menus: OriginMenuItem[]): LayoutData => {
     breadCrumbsMap,
   };
 };
-
-// export const getOpenKeys = (path: string, convertedMenus: ConvertedMenus) => {
-//   const openKeys: string[] = [];
-//   const currentMenus = convertedMenus[path];
-//   if (currentMenus) {
-//     let current: MenuItem | null = currentMenus[currentMenus.length - 1];
-//     let level = current.level;
-//     current.parentKey && openKeys.push(current.parentKey);
-//     while (current && current.parentKey) {
-//       const parentMenus = convertedMenus[current.parentKey];
-//       current = null;
-//       parentMenus.some(menu => {
-//         if (menu.level === level - 1) {
-//           menu.parentKey && openKeys.push(menu.parentKey);
-//           level -= 1;
-//           current = menu;
-//         }
-//       });
-//     }
-//   }
-//   return openKeys;
-// };
-
-// export const getBreadCrumbs = (
-//   path: string,
-//   convertedMenus: ConvertedMenus,
-// ) => {
-//   const breadCrumbs: MenuItem[] = [];
-//   const currentMenus = convertedMenus[path];
-//   if (currentMenus) {
-//     let current: MenuItem | null = currentMenus[currentMenus.length - 1];
-//     let level = current.level;
-//     breadCrumbs.unshift(current);
-//     while (current && current.parentKey) {
-//       const parentMenus = convertedMenus[current.parentKey];
-//       current = null;
-//       parentMenus.some(menu => {
-//         if (menu.level === level - 1) {
-//           breadCrumbs.unshift(menu);
-//           level -= 1;
-//           current = menu;
-//         }
-//       });
-//     }
-//   }
-//   return breadCrumbs;
-// };

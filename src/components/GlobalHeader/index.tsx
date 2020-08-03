@@ -36,6 +36,7 @@ const GlobalHeader: React.FC = () => {
         </Space>
       </div>
       <Dropdown
+        visible={state.visible}
         arrow
         overlay={<HeaderDropdown />}
         onVisibleChange={onVisibleChange}

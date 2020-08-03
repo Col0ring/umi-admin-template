@@ -1,9 +1,16 @@
 import React, { useEffect } from 'react';
-import { ConnectRC, connect, AuthProps, Loading, Redirect } from 'umi';
-import { matchPath } from 'react-router-dom';
+import {
+  ConnectRC,
+  connect,
+  PermissionModelState,
+  Loading,
+  Redirect,
+  matchPath,
+} from 'umi';
+
 import PageLoading from '@/components/PageLoading';
 
-type AuthWrapperProps = Pick<AuthProps, 'isLogin' | 'user'>;
+type AuthWrapperProps = Pick<PermissionModelState, 'isLogin' | 'user'>;
 
 const AuthWrapper: ConnectRC<AuthWrapperProps> = ({
   location,
@@ -49,7 +56,7 @@ const AuthWrapper: ConnectRC<AuthWrapperProps> = ({
 const mapStateToProps = ({
   permission,
 }: {
-  permission: AuthProps;
+  permission: PermissionModelState;
   loading: Loading;
 }) => {
   return {

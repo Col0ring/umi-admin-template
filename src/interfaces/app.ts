@@ -6,7 +6,9 @@ export interface OriginMenuItem extends IRoute {
   hideInBreadcrumb?: boolean;
   hideInTabs?: boolean;
   breadcrumbName?: string;
+  breadcrumbPath?: string;
   tabName?: string;
+  tabPath?: string;
   icon?: string;
   name?: string;
   path?: string;

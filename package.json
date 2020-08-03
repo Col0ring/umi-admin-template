@@ -20,6 +20,7 @@
     ]
   },
   "dependencies": {
+    "@ant-design/charts": "^0.9.8",
     "@ant-design/pro-table": "^2.3.4",
     "@types/classnames": "^2.2.10",
     "@types/nprogress": "^0.2.0",
@@ -37,6 +38,7 @@
     "react-dom": "^16.12.0",
     "react-scrollbars-custom": "^4.0.25",
     "umi": "^3.2.3",
+    "umi-plugin-keep-alive": "^0.0.1-beta.16",
     "use-immer": "^0.4.0",
     "yorkie": "^2.0.0"
   },

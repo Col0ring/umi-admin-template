@@ -1,14 +1,16 @@
-import { Effect, Reducer, Subscription } from 'umi';
+import { Effect, Reducer, Subscription, matchPath } from 'umi';
 import { progressDone, progressStart } from '@/utils/nprogress';
 import { getLayoutData, LayoutData } from '@/utils/app';
 import { ConvertedMenus, MenuItem } from '@/interfaces/app';
-import { matchPath } from 'react-router-dom';
 import setting from '@/setting';
 function pushTabPane(tabPanes: MenuItem[], pane: MenuItem, path: string) {
   pane = { ...pane };
   pane.displayPath = path;
   const idx = tabPanes.findIndex(item =>
-    matchPath(item.displayPath, { path: pane.displayPath, exact: true }),
+    matchPath(item.displayPath, {
+      path: path,
+      exact: true,
+    }),
   );
   if (idx === -1) {
     return [...tabPanes, pane];
@@ -29,6 +31,7 @@ export interface AppModelState extends LayoutData {
 }
 
 interface AppModelType {
+  namespace: string;
   state: AppModelState;
   reducers: {
     closeProgress: Reducer;
@@ -50,6 +53,7 @@ interface AppModelType {
 }
 
 const AppModel: AppModelType = {
+  namespace: 'app',
   state: {
     title: setting.menuTitle,
     collapsed:
@@ -80,7 +84,6 @@ const AppModel: AppModelType = {
     },
     setTabPanes(state, { payload }) {
       localStorage.setItem('appTabPanes', JSON.stringify(payload));
-      // console.log(payload);
       return { ...state!, tabPanes: payload };
     },
     setOpenKeys(state, { payload }) {
@@ -120,38 +123,57 @@ const AppModel: AppModelType = {
       const { convertedMenus, openKeysMap, breadCrumbsMap, tabPanes } = state;
       let currentTabPanes = tabPanes;
       if (convertedMenus[payload]) {
+        const current = convertedMenus[payload];
+        if (
+          current[current.length - 1].redirect ||
+          current[current.length - 1].routes ||
+          current[current.length - 1].hideInTabs
+        ) {
+          return;
+        }
         if (openKeysMap[payload]) {
           openKeys = openKeysMap[payload];
         }
-        const current = convertedMenus[payload];
         selectedKeys = [current[current.length - 1].activePath || payload];
 
-        currentTabPanes = pushTabPane(
-          currentTabPanes,
-          current[current.length - 1],
-          payload,
-        );
+        const tab = current[current.length - 1];
+        if (tab.tabName || tab.name) {
+          currentTabPanes = pushTabPane(currentTabPanes, tab, payload);
+        }
 
         breadCrumbs = breadCrumbsMap[payload];
       } else {
+        let isRedirect = false;
         Object.keys(convertedMenus).some(key => {
-          if (matchPath(payload, { path: key, exact: true })) {
-            // console.log(matchRoute);
-            openKeys = openKeysMap[key];
-            breadCrumbs = breadCrumbsMap[key];
+          const pathname = payload.split('?')[0];
+          if (matchPath(pathname, { path: key, exact: true })) {
             const current = convertedMenus[key];
+            if (
+              current[current.length - 1].redirect ||
+              current[current.length - 1].routes ||
+              current[current.length - 1].hideInTabs
+            ) {
+              isRedirect = true;
+              return true;
+            }
+            if (openKeysMap[key]) {
+              openKeys = openKeysMap[key];
+            }
+            breadCrumbs = breadCrumbsMap[key];
             selectedKeys = [current[current.length - 1].activePath || key];
 
-            currentTabPanes = pushTabPane(
-              currentTabPanes,
-              current[current.length - 1],
-              payload,
-            );
+            const tab = current[current.length - 1];
+            if (tab.tabName || tab.name) {
+              currentTabPanes = pushTabPane(currentTabPanes, tab, payload);
+            }
 
             return true;
           }
           return false;
         });
+        if (isRedirect) {
+          return;
+        }
       }
 
       yield put({
