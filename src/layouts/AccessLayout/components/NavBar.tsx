@@ -8,7 +8,7 @@ import BreadCrumb from '@/components/BreadCrumb';
 import HeaderTabPane from '@/components/HeaderTabPane';
 import setting from '@/setting';
 import styles from './NavBar.less';
-import useSiderBarShow from '@/hooks/useSiderBarShow';
+import useMobile from '@/hooks/useMobile';
 const { Header } = Layout;
 
 const NavBar: React.FC = () => {
@@ -16,7 +16,7 @@ const NavBar: React.FC = () => {
   const { collapsed } = useSelector(({ app }) => ({
     collapsed: app.collapsed,
   }));
-  const isSiderBarShow = useSiderBarShow();
+  const isMobile = useMobile();
 
   const toggleCollapse = () => {
     dispatch({
@@ -25,7 +25,7 @@ const NavBar: React.FC = () => {
     });
   };
   return React.createElement(
-    setting.globalHeaderFixed || !isSiderBarShow ? Affix : 'div',
+    setting.globalHeaderFixed || !isMobile ? Affix : 'div',
     null,
     <div>
       <Header className={styles.navbar}>
@@ -41,7 +41,7 @@ const NavBar: React.FC = () => {
           </Col>
           <Col md={{ span: 16 }} sm={{ span: 15 }} xs={{ span: 0 }}>
             <Scrollbar
-              className={styles.breadcrumbScrollWrapper}
+              className={styles.breadcrumbscrollWrapper}
               noScrollY
               removeTracksWhenNotUsed={true}
               contentProps={{

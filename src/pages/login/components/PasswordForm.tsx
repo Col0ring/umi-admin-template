@@ -19,7 +19,7 @@ const PasswordForm: React.FC<LoginProps> = ({ onLogin, loading }) => {
         password: '123456',
       }}
       labelCol={{
-        span: 4,
+        span: 5,
       }}
       onFinish={handleLogin}
     >

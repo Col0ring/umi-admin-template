@@ -1,11 +1,11 @@
 import { Button, Result } from 'antd';
 import React from 'react';
 import { history } from 'umi';
-const NoFoundPage: React.FC<{}> = () => (
+const ForbiddenPage: React.FC<{}> = () => (
   <Result
-    status="404"
-    title="404"
-    subTitle="对不起，您当前的页面不存在。"
+    status="403"
+    title="403"
+    subTitle="对不起，您无法查看当前页面"
     extra={
       <Button type="primary" onClick={() => history.push('/')}>
         回到首页
@@ -14,4 +14,4 @@ const NoFoundPage: React.FC<{}> = () => (
   />
 );
 
-export default NoFoundPage;
+export default ForbiddenPage;

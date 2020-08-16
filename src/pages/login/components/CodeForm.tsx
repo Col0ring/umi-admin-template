@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useImmer } from 'use-immer';
-import { Form, Button, Input, message } from 'antd';
+import { Form, Button, Input, message, Col, Row } from 'antd';
 import { StarOutlined } from '@ant-design/icons';
 import { phoneValidator, normalValidator } from '@/utils/validators';
 import { reqGetAuthCode } from '@/services/user';
@@ -56,7 +56,7 @@ const CodeForm: React.FC<LoginProps> = ({ onLogin, loading }) => {
         phone: '13496035481',
       }}
       labelCol={{
-        span: 4,
+        span: 5,
       }}
       onFinish={handleLogin}
       onFieldsChange={currents => {
@@ -81,32 +81,37 @@ const CodeForm: React.FC<LoginProps> = ({ onLogin, loading }) => {
           autoComplete="on"
         />
       </Form.Item>
-      <Form.Item
-        name="code"
-        label="验证码"
-        rules={[
-          normalValidator('请输入4位验证码', {
-            len: 4,
-          }),
-        ]}
-      >
-        <Input
-          prefix={<StarOutlined />}
-          placeholder="AuthCode"
-          autoComplete="off"
-          suffix={
+      <Form.Item label="验证码" required>
+        <Row align="middle" justify="space-between">
+          <Col span={14}>
+            <Form.Item
+              noStyle
+              name="code"
+              rules={[
+                normalValidator('请输入4位验证码', {
+                  len: 4,
+                }),
+              ]}
+            >
+              <Input
+                prefix={<StarOutlined />}
+                placeholder="AuthCode"
+                autoComplete="off"
+              />
+            </Form.Item>
+          </Col>
+          <Col span={9} style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button
               disabled={state.authTime > 0 ? true : false}
               type="primary"
-              size="small"
               onClick={getAuthCode}
             >
               {state.authTime
                 ? `${state.authTime}s 后可再次获取`
                 : '获取验证码'}
             </Button>
-          }
-        />
+          </Col>
+        </Row>
       </Form.Item>
       <Form.Item>
         <Button

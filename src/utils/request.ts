@@ -24,13 +24,24 @@ function errorHandler(count: number, msg: string) {
     message.error(msg);
   }
 }
-
 service.interceptors.request.use(
   config => {
+    if (window._axiosPromiseArr && Array.isArray(window._axiosPromiseArr)) {
+      const index = window._axiosPromiseArr.findIndex(
+        item => item.url === config.url,
+      );
+      const canceledRequest = window._axiosPromiseArr[index];
+      if (canceledRequest) {
+        canceledRequest.cancel();
+        window._axiosPromiseArr.splice(index, 1);
+      }
+    }
+
     config.cancelToken = new axios.CancelToken(cancel => {
       window._axiosPromiseArr = window._axiosPromiseArr || [];
-      window._axiosPromiseArr.push(cancel);
+      window._axiosPromiseArr.push({ url: config.url, cancel });
     });
+
     config.headers.token = getToken();
     if (typeof config.headers.retryCount === 'number') {
       config.headers.retryCount++;

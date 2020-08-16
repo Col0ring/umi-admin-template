@@ -15,13 +15,9 @@ const HeaderDropdown: React.FC<HeaderDropdownProps> = () => {
     dispatch({
       type: 'permission/resetUser',
     });
-    dispatch({
-      type: 'app/setTabPanes',
-      payload: [],
-    });
   };
   return (
-    <Menu>
+    <Menu selectable={false}>
       <Menu.Item icon={<EditOutlined />}>修改密码</Menu.Item>
       <Menu.Item icon={<GithubOutlined />}>
         <a

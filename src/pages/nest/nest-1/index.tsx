@@ -1,7 +1,7 @@
 import React from 'react';
 import { Alert } from 'antd';
 
-const Nest1: React.FC = () => {
+const Nest1: React.FC = props => {
   return <Alert message="nest-1" />;
 };
 

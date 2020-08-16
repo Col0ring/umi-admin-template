@@ -1,35 +1,37 @@
 import React, { useMemo } from 'react';
-import {
-  useDispatch,
-  useHistory,
-  useLocation,
-  useAliveController,
-  history,
-} from 'umi';
+import { useDispatch, useHistory, useLocation, useAliveController } from 'umi';
 import {
   CloseCircleOutlined,
   CloseOutlined,
   CloseSquareOutlined,
   VerticalLeftOutlined,
   VerticalRightOutlined,
+  ReloadOutlined,
   RedoOutlined,
 } from '@ant-design/icons';
+import pathToRegexp from 'path-to-regexp';
 import ContextMenu, { MenuItemProps } from '@/components/ContextMenu';
 import { MenuItem } from '@/interfaces/app';
 import useCloseItem, { isHomePath } from '../hooks/useCloseItem';
 export interface TabMenuProps {
   tabPanes: MenuItem[];
   pathKey: string;
+  keeperKey: string | RegExp;
 }
 
-const TabMenu: React.SFC<TabMenuProps> = ({ tabPanes, pathKey, children }) => {
+const TabMenu: React.FC<TabMenuProps> = ({
+  tabPanes,
+  pathKey,
+  keeperKey,
+  children,
+}) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { pathname, search } = useLocation();
   const { dropScope, clear, refreshScope } = useAliveController();
   const path = pathname + search;
   const closeItem = useCloseItem(tabPanes);
-
+  keeperKey = pathToRegexp(keeperKey);
   const contextMenu: MenuItemProps[] = useMemo(
     () => [
       {
@@ -37,11 +39,31 @@ const TabMenu: React.SFC<TabMenuProps> = ({ tabPanes, pathKey, children }) => {
         name: '刷新',
         click: key => {
           if (path !== key) {
-            dropScope(key).then(() => {
+            dropScope(keeperKey).then(() => {
               history.push(key);
             });
           } else {
-            refreshScope(key);
+            refreshScope(keeperKey);
+          }
+        },
+      },
+      {
+        icon: <ReloadOutlined />,
+        name: '刷新全部',
+        click: key => {
+          if (path !== key) {
+            clear().then(() => {
+              history.push(key);
+              const unlisten = history.listen(() => {
+                unlisten && unlisten();
+                setTimeout(() => {
+                  dropScope(keeperKey);
+                }, 60);
+              });
+            });
+          } else {
+            clear();
+            refreshScope(keeperKey);
           }
         },
       },
@@ -71,12 +93,12 @@ const TabMenu: React.SFC<TabMenuProps> = ({ tabPanes, pathKey, children }) => {
               type: 'app/setTabPanes',
               payload: [],
             });
-            history.push('/dashboard');
+            history.push('/');
             clear().then(() => {
               const unlisten = history.listen(() => {
                 unlisten && unlisten();
                 setTimeout(() => {
-                  dropScope(path);
+                  clear();
                 }, 60);
               });
             });
@@ -124,14 +146,17 @@ const TabMenu: React.SFC<TabMenuProps> = ({ tabPanes, pathKey, children }) => {
             payload: currentPanes,
           });
           closePanes.forEach(pane => {
-            dropScope(pane.displayPath);
+            dropScope(pane.keeperKey);
           });
           if (pathIndex < currentIndex) {
             history.push(key);
             const unlisten = history.listen(() => {
               unlisten && unlisten();
               setTimeout(() => {
-                dropScope(path);
+                dropScope(
+                  closePanes.find(pane => pane.displayPath === path)
+                    ?.keeperKey || path,
+                );
               }, 60);
             });
           }
@@ -155,21 +180,24 @@ const TabMenu: React.SFC<TabMenuProps> = ({ tabPanes, pathKey, children }) => {
             payload: currentPanes,
           });
           closePanes.forEach(pane => {
-            dropScope(pane.displayPath);
+            dropScope(pane.keeperKey);
           });
           if (pathIndex < 0 || pathIndex > currentIndex) {
             history.push(key);
             const unlisten = history.listen(() => {
               unlisten && unlisten();
               setTimeout(() => {
-                dropScope(path);
+                dropScope(
+                  closePanes.find(pane => pane.displayPath === path)
+                    ?.keeperKey || path,
+                );
               }, 60);
             });
           }
         },
       },
     ],
-    [tabPanes, path],
+    [tabPanes, keeperKey, path],
   );
   return (
     <ContextMenu meta={pathKey} menus={contextMenu}>

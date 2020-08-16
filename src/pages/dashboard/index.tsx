@@ -73,6 +73,7 @@ const DashBoard: React.FC = () => {
 
   return (
     <>
+      <></>
       <Rose {...config1} />
       <Line {...config} />
     </>

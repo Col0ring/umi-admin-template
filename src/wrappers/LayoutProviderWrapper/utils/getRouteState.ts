@@ -1,23 +1,12 @@
 import { IRoute } from 'umi';
-import {
-  ConvertedMenus,
-  MenuItem,
-  OpenKeysMap,
-  breadcrumbsMap,
-} from '@/interfaces/app';
+import { RouteState, LayoutRoute } from '../types';
 
-export interface LayoutData {
-  convertedMenus: ConvertedMenus;
-  openKeysMap: OpenKeysMap;
-  breadcrumbsMap: breadcrumbsMap;
-}
-
-export const getLayoutData = (menus: IRoute[]): LayoutData => {
+const getRouteState = (menus: IRoute[]): RouteState => {
   menus = JSON.parse(JSON.stringify(menus));
-  const openKeysMap: OpenKeysMap = {};
-  const breadcrumbsMap: breadcrumbsMap = {};
+  const openKeysMap: RouteState['openKeysMap'] = {};
+  const breadcrumbsMap: RouteState['breadcrumbsMap'] = {};
   const flatMenus = (
-    convertedMenus: ConvertedMenus = {},
+    convertedMenus: RouteState['pathsMap'] = {},
     menu: IRoute,
     level: number = 1,
     parentKey: null | string = null,
@@ -54,11 +43,11 @@ export const getLayoutData = (menus: IRoute[]): LayoutData => {
 
       if (breadcrumbsMap[key]) {
         if (breadcrumbsMap[key].length >= level - 1) {
-          breadcrumbsMap[key].push(menu as MenuItem);
+          breadcrumbsMap[key].push(menu as LayoutRoute);
         } else {
           breadcrumbsMap[key] = [
             ...breadcrumbsMap[parentKey!],
-            menu as MenuItem,
+            menu as LayoutRoute,
           ];
         }
       } else {
@@ -68,16 +57,16 @@ export const getLayoutData = (menus: IRoute[]): LayoutData => {
               ? breadcrumbsMap[parentKey].slice(0, -1)
               : breadcrumbsMap[parentKey];
 
-          breadcrumbsMap[key] = [...breadcrumbs, menu as MenuItem];
+          breadcrumbsMap[key] = [...breadcrumbs, menu as LayoutRoute];
         } else {
-          breadcrumbsMap[key] = [menu as MenuItem];
+          breadcrumbsMap[key] = [menu as LayoutRoute];
         }
       }
 
       if (parentKey !== key) {
-        convertedMenus[key] = [menu as MenuItem];
+        convertedMenus[key] = [menu as LayoutRoute];
       } else {
-        convertedMenus[key].push(menu as MenuItem);
+        convertedMenus[key].push(menu as LayoutRoute);
       }
       if (menu.routes && Array.isArray(menu.routes)) {
         menu.routes.forEach(route => {
@@ -87,10 +76,10 @@ export const getLayoutData = (menus: IRoute[]): LayoutData => {
     }
   };
 
-  const convertedMenus = menus.reduce((pre, menu) => {
+  const pathsMap = menus.reduce((pre, menu) => {
     flatMenus(pre, menu);
     return pre;
-  }, {} as ConvertedMenus);
+  }, {} as LayoutRoute);
   // 去重
   Object.keys(openKeysMap).forEach(key => {
     openKeysMap[key] = [...new Set(openKeysMap[key])];
@@ -98,8 +87,10 @@ export const getLayoutData = (menus: IRoute[]): LayoutData => {
   // breadcrumbsMap 已经去过重了
 
   return {
-    convertedMenus,
+    pathsMap,
     openKeysMap,
     breadcrumbsMap,
   };
 };
+
+export default getRouteState;

@@ -7,6 +7,7 @@ import {
   useAliveController,
 } from 'umi';
 import { MenuItem } from '@/interfaces/app';
+import pathToRegexp from 'path-to-regexp';
 
 export function isHomePath(path: string): boolean {
   return !!matchPath(path, { path: '/dashboard', exact: true });
@@ -20,6 +21,8 @@ const useCloseItem = (tabPanes: MenuItem[]) => {
   const close = useCallback(
     (key: string) => {
       const currentIndex = tabPanes.findIndex(pane => pane.displayPath === key);
+      const keeperKey = pathToRegexp(tabPanes[currentIndex].keeperKey);
+
       const currentPanes = tabPanes.filter(pane => pane.displayPath !== key);
       if (currentPanes.length === 0) {
         if (isHomePath(key) && isHomePath(path)) {
@@ -32,10 +35,10 @@ const useCloseItem = (tabPanes: MenuItem[]) => {
         const unlisten = history.listen(() => {
           unlisten && unlisten();
           setTimeout(() => {
-            dropScope(key);
+            dropScope(keeperKey);
           }, 60);
         });
-        history.push('/dashboard');
+        history.push('/');
       } else {
         dispatch({
           type: 'app/setTabPanes',
@@ -45,7 +48,7 @@ const useCloseItem = (tabPanes: MenuItem[]) => {
           const unlisten = history.listen(() => {
             unlisten && unlisten();
             setTimeout(() => {
-              dropScope(key);
+              dropScope(keeperKey);
             }, 60);
           });
           if (currentIndex === currentPanes.length) {
@@ -54,7 +57,7 @@ const useCloseItem = (tabPanes: MenuItem[]) => {
             history.push(currentPanes[currentIndex].displayPath);
           }
         } else {
-          dropScope(key);
+          dropScope(keeperKey);
         }
       }
     },

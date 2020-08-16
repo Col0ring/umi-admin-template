@@ -4,6 +4,7 @@ import { useImmer } from 'use-immer';
 import { Space } from 'antd';
 import useContextMenu from '@/hooks/useContextMenu';
 import styles from './index.less';
+import setting from '@/setting';
 export interface MenuItemProps {
   click?: (meta: any, e: React.MouseEvent) => void;
   icon?: React.ReactNode;
@@ -55,7 +56,11 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
         createPortal(
           <div
             onClick={e => e.stopPropagation()}
-            style={{ top: state.top, left: state.left }}
+            style={{
+              position: setting.globalHeaderFixed ? 'fixed' : 'absolute',
+              top: state.top,
+              left: state.left,
+            }}
             className={styles.contextMenu}
           >
             {menus &&

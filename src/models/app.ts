@@ -1,10 +1,12 @@
-import { Effect, Reducer, Subscription, matchPath } from 'umi';
-import { progressDone, progressStart } from '@/utils/nprogress';
+import { Effect, Reducer, matchPath, PermissionModelState } from 'umi';
 import { getLayoutData, LayoutData } from '@/utils/app';
-import { ConvertedMenus, MenuItem } from '@/interfaces/app';
+import { MenuItem } from '@/interfaces/app';
 import setting from '@/setting';
+import { matchRoles } from '@/utils/route';
+import { Model } from 'dva';
+
 function pushTabPane(tabPanes: MenuItem[], pane: MenuItem, path: string) {
-  pane = { ...pane };
+  pane = { ...pane } as MenuItem;
   pane.displayPath = path;
   const idx = tabPanes.findIndex(item =>
     matchPath(item.displayPath, {
@@ -26,20 +28,19 @@ export interface AppModelState extends LayoutData {
   selectedKeys: string[];
   tabKeys: string[];
   openKeys: string[];
-  breadCrumbs: MenuItem[];
+  breadcrumbs: MenuItem[];
   tabPanes: MenuItem[];
 }
 
-interface AppModelType {
+interface AppModel extends Model {
   namespace: string;
   state: AppModelState;
   reducers: {
-    closeProgress: Reducer;
     toggleCollapse: Reducer<AppModelState>;
     setLayoutData: Reducer<AppModelState>;
     setOpenKeys: Reducer<AppModelState>;
     setTabKeys: Reducer<AppModelState>;
-    setBreadCrumbs: Reducer<AppModelState>;
+    setbreadcrumbs: Reducer<AppModelState>;
     setTabPanes: Reducer<AppModelState>;
     setSelectedKeys: Reducer<AppModelState>;
     setTitle: Reducer<AppModelState>;
@@ -47,31 +48,24 @@ interface AppModelType {
   effects: {
     setCurrentLayoutData: Effect;
   };
-  subscriptions: {
-    setup: Subscription;
-  };
 }
 
-const AppModel: AppModelType = {
+const appModel: AppModel = {
   namespace: 'app',
   state: {
-    title: setting.menuTitle,
+    title: '',
     collapsed:
       Number(localStorage.getItem('appCollapsed')) === 1 ? true : false,
     convertedMenus: {},
     openKeysMap: {},
-    breadCrumbsMap: {},
+    breadcrumbsMap: {},
     selectedKeys: [],
     tabKeys: [],
     openKeys: [],
-    breadCrumbs: [],
+    breadcrumbs: [],
     tabPanes: JSON.parse(localStorage.getItem('appTabPanes') ?? '[]'),
   },
   reducers: {
-    closeProgress(state) {
-      progressDone();
-      return state;
-    },
     toggleCollapse(state, { payload }) {
       localStorage.setItem('appCollapsed', payload ? '1' : '0');
       return { ...state!, collapsed: payload };
@@ -79,8 +73,8 @@ const AppModel: AppModelType = {
     setLayoutData(state, { payload }) {
       return { ...state!, ...getLayoutData(payload) };
     },
-    setBreadCrumbs(state, { payload }) {
-      return { ...state!, breadCrumbs: payload };
+    setbreadcrumbs(state, { payload }) {
+      return { ...state!, breadcrumbs: payload };
     },
     setTabPanes(state, { payload }) {
       localStorage.setItem('appTabPanes', JSON.stringify(payload));
@@ -105,43 +99,50 @@ const AppModel: AppModelType = {
           convertedMenus[selectedKey][convertedMenus[selectedKey].length - 1]
             .name;
 
-        // 延时设置标题
-        // setTimeout(() => {
-        //   document.title = setting.menuTitle + ` - ${title}`;
-        // });
         return { ...state!, title };
       }
-      return state!;
+      return { ...state!, title: '' };
     },
   },
   effects: {
     *setCurrentLayoutData({ payload }, { put, select }) {
-      const state: AppModelState = yield select((state: any) => state.app);
+      const {
+        app,
+        permission,
+      }: {
+        app: AppModelState;
+        permission: PermissionModelState;
+      } = yield select((state: any) => ({
+        app: state.app,
+        permission: state.permission,
+      }));
+      const { roles } = permission;
       let selectedKeys: string[] = [];
       let openKeys: string[] = [];
-      let breadCrumbs: ConvertedMenus[] = [];
-      const { convertedMenus, openKeysMap, breadCrumbsMap, tabPanes } = state;
+      let breadcrumbs: MenuItem[] = [];
+      const { convertedMenus, openKeysMap, breadcrumbsMap, tabPanes } = app;
       let currentTabPanes = tabPanes;
       if (convertedMenus[payload]) {
         const current = convertedMenus[payload];
-        if (
-          current[current.length - 1].redirect ||
-          current[current.length - 1].routes ||
-          current[current.length - 1].hideInTabs
-        ) {
-          return;
+        if (current[current.length - 1].redirect) {
+          return true;
         }
         if (openKeysMap[payload]) {
           openKeys = openKeysMap[payload];
         }
-        selectedKeys = [current[current.length - 1].activePath || payload];
+        selectedKeys = [current[current.length - 1].activeMenu || payload];
 
-        const tab = current[current.length - 1];
-        if (tab.tabName || tab.name) {
-          currentTabPanes = pushTabPane(currentTabPanes, tab, payload);
+        if (
+          !current[current.length - 1].routes ||
+          !current[current.length - 1].hideInTabs
+        ) {
+          const tab = current[current.length - 1];
+          if (tab.tabName || tab.name) {
+            currentTabPanes = pushTabPane(currentTabPanes, tab, payload);
+          }
         }
 
-        breadCrumbs = breadCrumbsMap[payload];
+        breadcrumbs = breadcrumbsMap[payload];
       } else {
         let isRedirect = false;
         Object.keys(convertedMenus).some(key => {
@@ -149,9 +150,8 @@ const AppModel: AppModelType = {
           if (matchPath(pathname, { path: key, exact: true })) {
             const current = convertedMenus[key];
             if (
-              current[current.length - 1].redirect ||
-              current[current.length - 1].routes ||
-              current[current.length - 1].hideInTabs
+              current[current.length - 1].redirect
+              // current[current.length - 1].routes ||
             ) {
               isRedirect = true;
               return true;
@@ -159,12 +159,16 @@ const AppModel: AppModelType = {
             if (openKeysMap[key]) {
               openKeys = openKeysMap[key];
             }
-            breadCrumbs = breadCrumbsMap[key];
-            selectedKeys = [current[current.length - 1].activePath || key];
-
-            const tab = current[current.length - 1];
-            if (tab.tabName || tab.name) {
-              currentTabPanes = pushTabPane(currentTabPanes, tab, payload);
+            breadcrumbs = breadcrumbsMap[key];
+            selectedKeys = [current[current.length - 1].activeMenu || key];
+            if (
+              !current[current.length - 1].routes ||
+              !current[current.length - 1].hideInTabs
+            ) {
+              const tab = current[current.length - 1];
+              if (tab.tabName || tab.name) {
+                currentTabPanes = pushTabPane(currentTabPanes, tab, payload);
+              }
             }
 
             return true;
@@ -172,10 +176,39 @@ const AppModel: AppModelType = {
           return false;
         });
         if (isRedirect) {
-          return;
+          return true;
         }
       }
-
+      let isAuth = false;
+      isAuth = breadcrumbs.every(bread => {
+        if (matchRoles(roles, bread.roles)) {
+          return true;
+        }
+        return false;
+      });
+      if (!isAuth) {
+        yield put({
+          type: 'setSelectedKeys',
+          payload: [],
+        });
+        yield put({
+          type: 'setTabKeys',
+          payload: [],
+        });
+        yield put({
+          type: 'setOpenKeys',
+          payload: [],
+        });
+        yield put({
+          type: 'setbreadcrumbs',
+          payload: [],
+        });
+        yield put({
+          type: 'setTitle',
+          payload: [],
+        });
+        return false;
+      }
       yield put({
         type: 'setSelectedKeys',
         payload: selectedKeys,
@@ -189,8 +222,8 @@ const AppModel: AppModelType = {
         payload: openKeys,
       });
       yield put({
-        type: 'setBreadCrumbs',
-        payload: breadCrumbs,
+        type: 'setbreadcrumbs',
+        payload: breadcrumbs,
       });
       yield put({
         type: 'setTabPanes',
@@ -200,21 +233,10 @@ const AppModel: AppModelType = {
         type: 'setTitle',
         payload: selectedKeys,
       });
-    },
-  },
-  subscriptions: {
-    setup({ history }) {
-      history.listen(() => {
-        // 切换页面时中断所有请求
-        if (window._axiosPromiseArr && Array.isArray(window._axiosPromiseArr)) {
-          window._axiosPromiseArr.forEach(cancel => {
-            cancel();
-          });
-        }
-        progressStart();
-      });
+
+      return true;
     },
   },
 };
 
-export default AppModel;
+export default appModel;

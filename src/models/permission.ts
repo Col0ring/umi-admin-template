@@ -1,5 +1,5 @@
 import { Effect, Reducer } from 'umi';
-import { routerRedux } from 'dva';
+import { routerRedux, Model } from 'dva';
 import { getToken, setToken, removToken } from '@/utils/auth';
 import {
   reqLoginByPassword,
@@ -14,16 +14,18 @@ export interface UserProps {
 }
 export interface PermissionModelState {
   isLogin: boolean;
+  roles: string[];
   token: string | null;
   user: UserProps | null;
 }
 
-interface PermissionModelType {
+interface PermissionModel extends Model {
   namespace: string;
   state: PermissionModelState;
   reducers: {
     setToken: Reducer<PermissionModelState>;
     setUser: Reducer<PermissionModelState>;
+    setRoles: Reducer<PermissionModelState>;
   };
   effects: {
     login: Effect;
@@ -32,9 +34,10 @@ interface PermissionModelType {
   };
 }
 
-const PermissionModel: PermissionModelType = {
+const permissionModel: PermissionModel = {
   namespace: 'permission',
   state: {
+    roles: [],
     isLogin: getToken() ? true : false,
     user: null,
     token: getToken(),
@@ -45,6 +48,9 @@ const PermissionModel: PermissionModelType = {
     },
     setUser(state, { payload }) {
       return { ...state!, user: payload };
+    },
+    setRoles(state, { payload }) {
+      return { ...state!, roles: payload };
     },
   },
   effects: {
@@ -68,6 +74,10 @@ const PermissionModel: PermissionModelType = {
       const res = yield call(reqGetUserInfo);
       if (res) {
         yield put({
+          type: 'setRoles',
+          payload: res.roles,
+        });
+        yield put({
           type: 'setUser',
           payload: res.user,
         });
@@ -88,4 +98,4 @@ const PermissionModel: PermissionModelType = {
   },
 };
 
-export default PermissionModel;
+export default permissionModel;

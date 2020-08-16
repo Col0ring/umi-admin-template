@@ -4,7 +4,7 @@ export default {
   // use alias @ replace src
   menuLogo: '',
   menuTitle: 'Umi Admin',
-  globalHeaderFixed: true,
+  globalHeaderFixed: false,
   autoGetTitle: true,
   showTabs: true,
 };
