@@ -1,5 +1,4 @@
 import { IRoute } from 'umi';
-
 export type LayoutRoute = IRoute & {
   parentKey: string | null;
   level: number;

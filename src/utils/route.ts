@@ -1,4 +1,4 @@
-import { IRoute } from 'umi';
+import { IRoute, matchPath } from 'umi';
 
 // 转换原始路由结构路由
 export function transformRoutes(routes: IRoute[]) {
@@ -39,4 +39,8 @@ export function matchRoles(roles: string[], routeRoles?: string[]) {
     return true;
   }
   return roles.some(role => routeRoles.includes(role));
+}
+
+export function isHomePath(path: string): boolean {
+  return !!matchPath(path, { path: '/dashboard', exact: true });
 }

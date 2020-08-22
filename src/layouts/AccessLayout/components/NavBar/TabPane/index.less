@@ -1,0 +1,20 @@
+.headerTabPane {
+  padding: 2px 10px 0;
+  border-top: 1px solid #eee;
+  background-color: #fff;
+  min-height: 40px;
+  .pane {
+    .closeIcon {
+      margin: 0;
+      visibility: hidden;
+      &.open {
+        visibility: visible;
+      }
+    }
+    &:hover {
+      .closeIcon {
+        visibility: visible;
+      }
+    }
+  }
+}

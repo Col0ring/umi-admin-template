@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useHistory, useLocation, useAliveController } from 'umi';
+import { useHistory, useAliveController } from 'umi';
 import {
   CloseCircleOutlined,
   CloseOutlined,
@@ -11,13 +11,16 @@ import {
 } from '@ant-design/icons';
 import pathToRegexp from 'path-to-regexp';
 import ContextMenu, { MenuItemProps } from '@/components/ContextMenu';
-import { MenuItem } from '@/interfaces/app';
-import useCloseItem, { isHomePath } from '../hooks/useCloseItem';
-import useLayout from '@/hooks/useLayout';
+import { LayoutRoute } from '@/interfaces/layouts';
+import useCloseTab from '../../../hooks/useCloseTab';
+import { isHomePath } from '@/utils/route';
+import useLayout from '../../../hooks/useLayout';
+
 export interface TabMenuProps {
-  tabPanes: MenuItem[];
+  tabPanes: LayoutRoute[];
   pathKey: string;
   keeperKey: string | RegExp;
+  path: string;
 }
 
 const TabMenu: React.FC<TabMenuProps> = ({
@@ -25,13 +28,12 @@ const TabMenu: React.FC<TabMenuProps> = ({
   pathKey,
   keeperKey,
   children,
+  path,
 }) => {
   const history = useHistory();
   const { setTabPanes } = useLayout();
-  const { pathname, search } = useLocation();
   const { dropScope, clear, refreshScope } = useAliveController();
-  const path = pathname + search;
-  const closeItem = useCloseItem(tabPanes);
+  const closeItem = useCloseTab(tabPanes, path);
   keeperKey = pathToRegexp(keeperKey);
   const contextMenu: MenuItemProps[] = useMemo(
     () => [

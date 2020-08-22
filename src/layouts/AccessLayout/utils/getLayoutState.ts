@@ -1,4 +1,4 @@
-import { RouteState, LayoutState, LayoutRoute } from '../types';
+import { RouteState, LayoutState, LayoutRoute } from '@/interfaces/layouts';
 import { matchPath } from 'umi';
 function pushTabPane(tabPanes: LayoutRoute[], pane: LayoutRoute, path: string) {
   pane = { ...pane } as LayoutRoute;

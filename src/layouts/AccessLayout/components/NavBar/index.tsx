@@ -1,28 +1,26 @@
 import React, { memo } from 'react';
-import { useDispatch, useSelector } from 'umi';
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 import { Layout, Row, Col, Affix } from 'antd';
 import { Scrollbar } from 'react-scrollbars-custom';
-import GlobalHeader from '@/components/GlobalHeader';
-import BreadCrumb from '@/components/BreadCrumb';
-import HeaderTabPane from '@/components/HeaderTabPane';
 import setting from '@/setting';
-import styles from './NavBar.less';
+import styles from './index.less';
 import useMobile from '@/hooks/useMobile';
+import Breadcrumb from './Breadcrumb';
+import TabPane from './TabPane';
+import Userinfo from './Userinfo';
+import useAccessLayout from '../../hooks/useAccessLayout';
+import useLayout from '../../hooks/useLayout';
+import { useLocation } from 'umi';
 const { Header } = Layout;
 
 const NavBar: React.FC = () => {
-  const dispatch = useDispatch();
-  const { collapsed } = useSelector(({ app }) => ({
-    collapsed: app.collapsed,
-  }));
+  const { collapsed, setCollapsed } = useAccessLayout();
+  const { breadcrumbs, tabPanes, tabKey } = useLayout();
+  const { pathname, search } = useLocation();
+  const path = pathname + search;
   const isMobile = useMobile();
-
   const toggleCollapse = () => {
-    dispatch({
-      type: 'app/toggleCollapse',
-      payload: !collapsed,
-    });
+    setCollapsed(!collapsed);
   };
   return React.createElement(
     setting.globalHeaderFixed || !isMobile ? Affix : 'div',
@@ -51,7 +49,7 @@ const NavBar: React.FC = () => {
               }}
             >
               <div className={styles.breadcrumb}>
-                <BreadCrumb />
+                <Breadcrumb pathname={pathname} breadcrumbs={breadcrumbs} />
               </div>
             </Scrollbar>
           </Col>
@@ -61,11 +59,13 @@ const NavBar: React.FC = () => {
             md={{ span: 6 }}
             className={styles.avatarContainer}
           >
-            <GlobalHeader />
+            <Userinfo />
           </Col>
         </Row>
       </Header>
-      {setting.showTabs && <HeaderTabPane />}
+      {setting.showTabs && (
+        <TabPane tabPanes={tabPanes} tabKey={tabKey} path={path} />
+      )}
     </div>,
   );
 };

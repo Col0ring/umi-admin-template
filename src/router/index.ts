@@ -34,7 +34,7 @@ export const routes: IRoute[] = [
     path: '/',
     component: '@/layouts/BlankLayout',
     wrappers: [
-      '@/wrappers/LayoutProviderWrapper',
+      '@/wrappers/RouteLayoutProviderWrapper',
       '@/wrappers/PageProgressWrapper',
       '@/wrappers/AuthWrapper',
     ],

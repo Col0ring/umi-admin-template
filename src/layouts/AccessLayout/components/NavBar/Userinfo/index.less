@@ -1,0 +1,22 @@
+.globalHeaderContainer {
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+  box-sizing: border-box;
+  padding-bottom: 5px;
+  .tools {
+    line-height: 1.2em;
+    display: flex;
+    margin-right: 10px;
+  }
+  .avatarContainer {
+    display: flex;
+    align-items: flex-end;
+    .icon {
+      transition: transform 0.3s ease;
+      &.open {
+        transform: rotate(180deg);
+      }
+    }
+  }
+}

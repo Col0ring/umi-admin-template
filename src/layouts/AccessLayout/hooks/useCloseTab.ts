@@ -1,23 +1,18 @@
 import { useCallback } from 'react';
-import { matchPath, useLocation, useHistory, useAliveController } from 'umi';
-import { MenuItem } from '@/interfaces/app';
+import { useHistory, useAliveController } from 'umi';
+import { LayoutRoute } from '@/interfaces/layouts';
 import pathToRegexp from 'path-to-regexp';
-import useLayout from '@/hooks/useLayout';
+import useLayout from './useLayout';
+import { isHomePath } from '@/utils/route';
 
-export function isHomePath(path: string): boolean {
-  return !!matchPath(path, { path: '/dashboard', exact: true });
-}
-const useCloseItem = (tabPanes: MenuItem[]) => {
-  const { pathname, search } = useLocation();
+const useCloseTab = (tabPanes: LayoutRoute[], path: string) => {
   const { setTabPanes } = useLayout();
   const history = useHistory();
   const { dropScope } = useAliveController();
-  const path = pathname + search;
   const close = useCallback(
     (key: string) => {
       const currentIndex = tabPanes.findIndex(pane => pane.displayPath === key);
       const keeperKey = pathToRegexp(tabPanes[currentIndex].keeperKey);
-
       const currentPanes = tabPanes.filter(pane => pane.displayPath !== key);
       if (currentPanes.length === 0) {
         if (isHomePath(key) && isHomePath(path)) {
@@ -33,7 +28,6 @@ const useCloseItem = (tabPanes: MenuItem[]) => {
         history.push('/');
       } else {
         setTabPanes(currentPanes);
-
         if (key === path) {
           const unlisten = history.listen(() => {
             unlisten && unlisten();
@@ -56,4 +50,4 @@ const useCloseItem = (tabPanes: MenuItem[]) => {
   return close;
 };
 
-export default useCloseItem;
+export default useCloseTab;

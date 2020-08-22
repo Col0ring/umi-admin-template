@@ -28,7 +28,6 @@ const AuthWrapper: React.FC = ({ children }) => {
     [pathname],
   );
   const currentRoute = breadcrumbs[breadcrumbs.length - 1];
-  console.log(currentRoute);
   // 必须在 useEffect 中请求，否则会有渲染错误
   useEffect(() => {
     if (isLogin && !user) {

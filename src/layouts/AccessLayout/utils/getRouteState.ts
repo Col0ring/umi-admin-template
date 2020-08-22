@@ -1,5 +1,5 @@
 import { IRoute } from 'umi';
-import { RouteState, LayoutRoute } from '../types';
+import { RouteState, LayoutRoute } from '@/interfaces/layouts';
 
 const getRouteState = (menus: IRoute[]): RouteState => {
   menus = JSON.parse(JSON.stringify(menus));

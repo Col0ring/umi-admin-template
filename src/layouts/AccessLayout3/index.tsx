@@ -1,20 +1,20 @@
-import React, { useRef, useCallback } from 'react';
+import React, { createContext, useRef } from 'react';
 import { useImmer } from 'use-immer';
 import { Layout } from 'antd';
-import { Helmet, IRouteComponentProps, IRoute } from 'umi';
+import { useSelector, Helmet, IRouteComponentProps, IRoute } from 'umi';
 import { useFullscreen } from 'ahooks';
-
 import SiderBar from './components/SiderBar';
 import MainContent from './components/MainContent';
 import NavBar from './components/NavBar';
-import LayoutFooter from './components/LayoutFooter';
+import GlobalFooter from '@/layouts/AccessLayout2/components/LayoutFooter';
 import setting from '@/setting';
 import useMobile from '@/hooks/useMobile';
-import useLayout from '../../hooks/useLayout';
-import useAuth from '@/hooks/useAuth';
+import useLayout from '@/hooks/useLayout';
 import { matchRoles } from '@/utils/route';
-import ForbiddenPage from '@/components/403';
-import AccessLayoutContext from './contexts/AccessLayoutContext';
+import ForbiddenPage from './components/ForbiddenPage';
+import useAuth from '@/hooks/useAuth';
+
+export const Context = createContext<AnyObject>({});
 
 const AccessLayout: React.FC<IRouteComponentProps> = props => {
   const fullRef = useRef<HTMLDivElement | null>(null);
@@ -22,39 +22,25 @@ const AccessLayout: React.FC<IRouteComponentProps> = props => {
   const [state, setState] = useImmer({
     collapsed: false,
   });
-  const { collapsed } = state;
   const { roles } = useAuth();
   const {
-    location: { pathname },
     route: { routes },
     children,
   } = props;
-
+  const { title, collapsed } = useSelector(({ app }) => ({
+    title: app.title,
+    collapsed: app.collapsed,
+  }));
   const isMobile = useMobile();
-  const { breadcrumbs, openKeys, selectedKey } = useLayout();
-
+  const { breadcrumbs } = useLayout();
   const currentRoute = breadcrumbs[breadcrumbs.length - 1];
-  const title = currentRoute?.title || currentRoute?.name;
-
-  const setCollapsed = useCallback(
-    (collapsed: boolean) => {
-      setState(state => {
-        state.collapsed = collapsed;
-      });
-    },
-    [setState],
-  );
 
   return (
-    <AccessLayoutContext.Provider
-      value={{ toggleFull, collapsed, setCollapsed }}
-    >
+    <Context.Provider value={{ toggleFull }}>
       {/* 修改标题 */}
-      {setting.autoGetTitle && (
-        <Helmet>
-          <title>{setting.menuTitle + title ? '-' + title : ''}</title>
-        </Helmet>
-      )}
+      <Helmet>
+        <title>{setting.menuTitle + (title ? `-${title}` : '')}</title>
+      </Helmet>
 
       <div className="umi-admin-layout" ref={fullRef}>
         <Layout
@@ -64,12 +50,7 @@ const AccessLayout: React.FC<IRouteComponentProps> = props => {
             transition: 'all 0.2s',
           }}
         >
-          <SiderBar
-            pathname={pathname}
-            selectedKey={selectedKey}
-            openKeys={openKeys}
-            menus={(routes as IRoute[]) || []}
-          />
+          <SiderBar menus={(routes as IRoute[]) || []} />
           <Layout>
             <NavBar />
             <MainContent>
@@ -79,11 +60,11 @@ const AccessLayout: React.FC<IRouteComponentProps> = props => {
                 <ForbiddenPage />
               )}
             </MainContent>
-            <LayoutFooter />
+            <GlobalFooter />
           </Layout>
         </Layout>
       </div>
-    </AccessLayoutContext.Provider>
+    </Context.Provider>
   );
 };
 

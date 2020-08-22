@@ -1,0 +1,16 @@
+.breadcrumbs {
+  .breadcrumbItem {
+    a {
+      color: #000;
+      &:hover {
+        color: @primary-color;
+      }
+    }
+    &.notAllowed {
+      cursor: not-allowed;
+    }
+    &.active {
+      color: @primary-color;
+    }
+  }
+}
