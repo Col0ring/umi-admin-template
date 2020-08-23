@@ -1,4 +1,12 @@
 {
+  "repository": {
+    "url": "https://github.com/Col0ring/umi-admin-template",
+    "type": "git"
+  },
+  "author": {
+    "email": "xylCol0ring@gmail.com",
+    "name": "Col0ring"
+  },
   "private": true,
   "scripts": {
     "start": "umi dev",
