@@ -1,4 +1,5 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
+import { useImmer } from 'use-immer';
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 import { useLocation } from 'umi';
 import { Layout, Affix } from 'antd';
@@ -16,14 +17,27 @@ const { Header } = Layout;
 
 const NavBar: React.FC = () => {
   const { collapsed, setCollapsed } = useAccessLayout();
-  const { breadcrumbs, tabPanes, tabKey } = useLayout();
+  const { breadcrumbs, tabPanes, tabKey, setTabPanes } = useLayout();
   const { isMathRoles } = useAuth();
+  const [state, setState] = useImmer({
+    tabPanes: [] as typeof tabPanes,
+  });
+
   const { pathname, search } = useLocation();
   const path = pathname + search;
   const isMobile = useMobile();
   const toggleCollapse = () => {
     setCollapsed(!collapsed);
   };
+  useEffect(() => {
+    if (isMathRoles) {
+      setState(state => {
+        state.tabPanes = tabPanes;
+      });
+    } else {
+      setTabPanes(state.tabPanes);
+    }
+  }, [tabPanes, isMathRoles, setState]);
   return React.createElement(
     setting.navbarFixed || !isMobile ? Affix : 'div',
     null,
@@ -64,11 +78,7 @@ const NavBar: React.FC = () => {
         </div>
       </Header>
       {setting.tabsShow && (
-        <TabPane
-          tabPanes={isMathRoles ? tabPanes : []}
-          tabKey={tabKey}
-          path={path}
-        />
+        <TabPane tabPanes={state.tabPanes} tabKey={tabKey} path={path} />
       )}
     </div>,
   );

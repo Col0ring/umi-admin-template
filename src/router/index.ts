@@ -55,6 +55,7 @@ export const routes: IRoute[] = [
             hideInMenu: true,
           },
           {
+            roles: [],
             breadcrumbName: '首页',
             path: '/dashboard',
             name: 'dashboard',
@@ -111,22 +112,19 @@ export const routes: IRoute[] = [
             ],
           },
           {
-            path: '/example',
-            name: 'example',
+            path: '/component',
+            name: 'Component',
             icon: 'RadarChartOutlined',
-            component: '@/pages/nest',
+            component: '@/pages/component',
             routes: [
               {
-                path: '/example',
-                name: 'list',
-                component: '@/pages/nest/nest-1',
+                path: '/component',
+                redirect: '/component/Switch',
               },
               {
-                path: 'edit',
-                name: 'edit',
-                hideInMenu: true,
-                activeMenu: '/example',
-                component: '@/pages/nest/nest-2',
+                path: 'Switch',
+                name: 'Switch',
+                component: '@/pages/component/Switch',
               },
             ],
           },

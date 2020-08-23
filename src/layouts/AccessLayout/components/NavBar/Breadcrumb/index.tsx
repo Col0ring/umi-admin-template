@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { Link, useRouteMatch, matchPath } from 'umi';
 import classnames from 'classnames';
 import { compile } from 'path-to-regexp';
-import { Breadcrumb, Space } from 'antd';
+import { Breadcrumb } from 'antd';
 import TotalIcons from '../../TotalIcons';
 import { urlReg } from '@/utils/validators';
 import { LayoutState } from '@/interfaces/layouts';
@@ -15,10 +15,10 @@ interface BreadcrumbContent {
 
 const BreadcrumbContent: React.FC<BreadcrumbContent> = ({ icon, name }) => {
   return (
-    <Space>
-      {icon && <TotalIcons name={icon} />}
+    <>
+      {icon && <TotalIcons style={{ marginRight: 5 }} name={icon} />}
       {name}
-    </Space>
+    </>
   );
 };
 
