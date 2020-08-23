@@ -14,7 +14,7 @@ const Logo: React.FC<LogoProps> = ({ title, logo }) => {
       {logo ? (
         <img
           className={styles.logoImg}
-          src={isUrl ? logo : require(logo)}
+          src={isUrl ? logo : require(`${logo}`)}
           alt="logo"
         />
       ) : (
