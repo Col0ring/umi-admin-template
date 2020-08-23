@@ -56,7 +56,6 @@ export const routes: IRoute[] = [
           },
           {
             breadcrumbName: '首页',
-            roles: [],
             path: '/dashboard',
             name: 'dashboard',
             icon: 'GroupOutlined',
