@@ -1,5 +1,4 @@
 import { defineConfig } from 'umi';
-import setting from './src/setting';
 import variables from './theme/variables';
 import routes from './src/router';
 
@@ -10,7 +9,7 @@ export default defineConfig({
   theme: {
     ...variables,
   },
-  title: setting.menuTitle,
+  title: 'Umi Admin',
   routes,
   // dynamicImport: {
   //   loading: '@/components/PageLoading',

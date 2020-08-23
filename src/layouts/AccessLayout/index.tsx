@@ -3,12 +3,11 @@ import { useImmer } from 'use-immer';
 import { Layout } from 'antd';
 import { Helmet, IRouteComponentProps, IRoute } from 'umi';
 import { useFullscreen } from 'ahooks';
-
 import SiderBar from './components/SiderBar';
 import MainContent from './components/MainContent';
 import NavBar from './components/NavBar';
 import LayoutFooter from './components/LayoutFooter';
-import setting from '@/setting';
+import setting from '@/layouts/AccessLayout/setting';
 import useMobile from '@/hooks/useMobile';
 import useLayout from '../../hooks/useLayout';
 import useAuth from '@/hooks/useAuth';
@@ -51,7 +50,7 @@ const AccessLayout: React.FC<IRouteComponentProps> = props => {
       {/* 修改标题 */}
       {setting.autoGetTitle && (
         <Helmet>
-          <title>{setting.menuTitle + (title ? ' - ' + title : '')}</title>
+          <title>{setting.title + (title ? ' - ' + title : '')}</title>
         </Helmet>
       )}
 

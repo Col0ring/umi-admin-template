@@ -6,7 +6,6 @@ import PasswordForm from './components/PasswordForm';
 import CodeForm from './components/CodeForm';
 import LoginHeader from './components/LoginHeader';
 import styles from './index.less';
-import setting from '@/setting';
 
 const { TabPane } = Tabs;
 
@@ -47,7 +46,7 @@ const Login: React.FC = () => {
   return (
     <div className={styles.loginContainer}>
       <div className={styles.loginForm}>
-        <LoginHeader title={setting.menuTitle} className={styles.loginHeader} />
+        <LoginHeader title="Umi Admin" className={styles.loginHeader} />
         <Tabs centered>
           <TabPane tab="验证码登陆" key="code">
             <CodeForm onLogin={onCodeLogin} loading={loading} />

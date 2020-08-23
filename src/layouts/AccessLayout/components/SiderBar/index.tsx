@@ -9,7 +9,7 @@ import useMobile from '@/hooks/useMobile';
 import Logo from './Logo';
 import { matchRoles } from '@/utils/route';
 import { urlReg } from '@/utils/validators';
-import setting from '@/setting';
+import setting from '@/layouts/AccessLayout/setting';
 import useAuth from '@/hooks/useAuth';
 import useAccessLayout from '../../hooks/useAccessLayout';
 import styles from './index.less';
@@ -159,7 +159,8 @@ const SiderBar: React.FC<SiderBarProps> = ({
       collapsed={isMobile ? collapsed : false}
       onBreakpoint={isMobile ? toggleCollapse : undefined}
     >
-      <Logo title={setting.menuTitle} />
+      {setting.logoShow && <Logo title={setting.title} logo={setting.logo} />}
+
       <Menu
         mode="inline"
         selectedKeys={[selectedKey]}

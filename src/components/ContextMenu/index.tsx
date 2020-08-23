@@ -4,7 +4,7 @@ import { useImmer } from 'use-immer';
 import { Space } from 'antd';
 import useContextMenu from '@/hooks/useContextMenu';
 import styles from './index.less';
-import setting from '@/setting';
+import setting from '@/layouts/AccessLayout/setting';
 export interface MenuItemProps {
   click?: (meta: any, e: React.MouseEvent) => void;
   icon?: React.ReactNode;
@@ -57,7 +57,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              position: setting.globalHeaderFixed ? 'fixed' : 'absolute',
+              position: setting.navbarFixed ? 'fixed' : 'absolute',
               top: state.top,
               left: state.left,
             }}
