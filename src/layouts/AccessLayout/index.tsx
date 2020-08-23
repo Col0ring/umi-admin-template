@@ -12,7 +12,6 @@ import setting from '@/setting';
 import useMobile from '@/hooks/useMobile';
 import useLayout from '../../hooks/useLayout';
 import useAuth from '@/hooks/useAuth';
-import { matchRoles } from '@/utils/route';
 import ForbiddenPage from '@/components/403';
 import AccessLayoutContext from './contexts/AccessLayoutContext';
 
@@ -23,7 +22,7 @@ const AccessLayout: React.FC<IRouteComponentProps> = props => {
     collapsed: false,
   });
   const { collapsed } = state;
-  const { roles } = useAuth();
+  const { isMathRoles } = useAuth();
   const {
     location: { pathname },
     route: { routes },
@@ -52,7 +51,7 @@ const AccessLayout: React.FC<IRouteComponentProps> = props => {
       {/* 修改标题 */}
       {setting.autoGetTitle && (
         <Helmet>
-          <title>{setting.menuTitle + title ? '-' + title : ''}</title>
+          <title>{setting.menuTitle + (title ? ' - ' + title : '')}</title>
         </Helmet>
       )}
 
@@ -73,11 +72,7 @@ const AccessLayout: React.FC<IRouteComponentProps> = props => {
           <Layout>
             <NavBar />
             <MainContent>
-              {matchRoles(roles, currentRoute?.roles) ? (
-                children
-              ) : (
-                <ForbiddenPage />
-              )}
+              {isMathRoles ? children : <ForbiddenPage />}
             </MainContent>
             <LayoutFooter />
           </Layout>

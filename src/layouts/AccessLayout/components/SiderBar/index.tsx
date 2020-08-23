@@ -4,7 +4,6 @@ import classnames from 'classnames';
 import { useImmer } from 'use-immer';
 import { Menu, Layout, Drawer } from 'antd';
 import { MenuProps } from 'antd/es/menu';
-
 import TotalIcons from '../TotalIcons';
 import useMobile from '@/hooks/useMobile';
 import Logo from './Logo';
@@ -91,18 +90,15 @@ const SiderBar: React.FC<SiderBarProps> = ({
   );
 
   const [state, setState] = useImmer({
-    defaultCollapse: !isMobile,
     openKeys: [] as string[],
     collapsedOpenKeys: [] as string[],
   });
 
   const toggleCollapse = useCallback(
     (broken: boolean) => {
-      if (state.defaultCollapse) {
-        setCollapsed(broken);
-      }
+      setCollapsed(broken);
     },
-    [state.defaultCollapse, setCollapsed],
+    [setCollapsed],
   );
 
   const onOpenChange: MenuProps['onOpenChange'] = useCallback(
@@ -124,12 +120,6 @@ const SiderBar: React.FC<SiderBarProps> = ({
   const onDrawerClose = useCallback(() => {
     setCollapsed(!collapsed);
   }, [collapsed, setCollapsed]);
-
-  useEffect(() => {
-    setState(state => {
-      state.defaultCollapse = true;
-    });
-  }, []);
 
   useEffect(() => {
     setState(state => {

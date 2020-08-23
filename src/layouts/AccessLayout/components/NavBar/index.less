@@ -3,9 +3,12 @@
   padding: 0 20px 0 0;
   .content {
     height: 100%;
+    display: flex;
+    justify-content: space-between;
     .collapse {
+      margin-left: 20px;
       display: flex;
-      justify-content: center;
+      justify-self: center;
       align-items: center;
       .trigger {
         font-size: 18px;
@@ -16,18 +19,23 @@
         }
       }
     }
-    .breadcrumbscrollWrapper {
-      :global {
-        .ScrollbarsCustom-Wrapper {
-          bottom: 0 !important;
+    .breadcrumbContainer {
+      margin: 0 20px;
+      flex: 1;
+      height: 100%;
+      .breadcrumbscrollWrapper {
+        :global {
+          .ScrollbarsCustom-Wrapper {
+            bottom: 0 !important;
+          }
         }
       }
       .breadcrumb {
         display: flex;
-        justify-content: flex-start !important;
         align-items: center;
         height: 100%;
         width: 100%;
+        min-width: 200px;
       }
     }
 

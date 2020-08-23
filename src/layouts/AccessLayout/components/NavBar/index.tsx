@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
-import { Layout, Row, Col, Affix } from 'antd';
+import { useLocation } from 'umi';
+import { Layout, Affix } from 'antd';
 import { Scrollbar } from 'react-scrollbars-custom';
 import setting from '@/setting';
 import styles from './index.less';
@@ -10,12 +11,13 @@ import TabPane from './TabPane';
 import Userinfo from './Userinfo';
 import useAccessLayout from '../../hooks/useAccessLayout';
 import useLayout from '../../hooks/useLayout';
-import { useLocation } from 'umi';
+import useAuth from '@/hooks/useAuth';
 const { Header } = Layout;
 
 const NavBar: React.FC = () => {
   const { collapsed, setCollapsed } = useAccessLayout();
   const { breadcrumbs, tabPanes, tabKey } = useLayout();
+  const { isMathRoles } = useAuth();
   const { pathname, search } = useLocation();
   const path = pathname + search;
   const isMobile = useMobile();
@@ -27,7 +29,40 @@ const NavBar: React.FC = () => {
     null,
     <div>
       <Header className={styles.navbar}>
-        <Row className={styles.content} gutter={5} justify="space-between">
+        <div className={styles.content}>
+          <div className={styles.collapse}>
+            {React.createElement(
+              collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
+              {
+                className: styles.trigger,
+                onClick: toggleCollapse,
+              },
+            )}
+          </div>
+          <div className={styles.breadcrumbContainer}>
+            <Scrollbar
+              className={styles.breadcrumbscrollWrapper}
+              noScrollY
+              removeTracksWhenNotUsed={true}
+              contentProps={{
+                style: {
+                  height: '100%',
+                },
+              }}
+            >
+              <div className={styles.breadcrumb}>
+                <Breadcrumb
+                  pathname={pathname}
+                  breadcrumbs={isMathRoles ? breadcrumbs : []}
+                />
+              </div>
+            </Scrollbar>
+          </div>
+          <div className={styles.avatarContainer}>
+            <Userinfo />
+          </div>
+        </div>
+        {/* <Row className={styles.content} gutter={5} justify="space-between">
           <Col sm={{ span: 2 }} xs={{ span: 4 }} className={styles.collapse}>
             {React.createElement(
               collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
@@ -49,7 +84,10 @@ const NavBar: React.FC = () => {
               }}
             >
               <div className={styles.breadcrumb}>
-                <Breadcrumb pathname={pathname} breadcrumbs={breadcrumbs} />
+                <Breadcrumb
+                  pathname={pathname}
+                  breadcrumbs={isMathRoles ? breadcrumbs : []}
+                />
               </div>
             </Scrollbar>
           </Col>
@@ -61,10 +99,14 @@ const NavBar: React.FC = () => {
           >
             <Userinfo />
           </Col>
-        </Row>
+        </Row> */}
       </Header>
       {setting.showTabs && (
-        <TabPane tabPanes={tabPanes} tabKey={tabKey} path={path} />
+        <TabPane
+          tabPanes={isMathRoles ? tabPanes : []}
+          tabKey={tabKey}
+          path={path}
+        />
       )}
     </div>,
   );
