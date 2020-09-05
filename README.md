@@ -1,5 +1,5 @@
 # Umi-Admin-template
-一个基于 umi + dav + antd 的 typescript 后台管理项目模板。能够自动基于路由实现导航菜单、面包屑以及路由权限的分配。
+一个基于 umi + dva + antd 的 typescript 后台管理项目模板。能够自动基于路由实现导航菜单、面包屑以及路由权限的分配。
 
 **完成功能：**
 
